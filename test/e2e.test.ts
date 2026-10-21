@@ -20,7 +20,8 @@ describe.skipIf(!hasBrowser)('end to end', () => {
     expect(ids).toEqual(
       expect.arrayContaining([
         'stock-gradient', 'glow-effects', 'emoji-icons', 'card-grid-sameness', 'stock-copy', 'placeholder-content', 'broken-internal-links',
-        'console-errors', 'placeholder-links', 'empty-controls', 'horizontal-overflow', 'unresponsive-buttons', 'broken-images',
+        'console-errors', 'placeholder-links', 'horizontal-overflow', 'unresponsive-buttons', 'broken-images',
+        'axe/button-name', 'axe/image-alt', 'axe/color-contrast', 'axe/html-has-lang', 'seo-title', 'seo-description',
       ]),
     );
     expect(report.coverage.rendered).toBe(true);
@@ -42,6 +43,8 @@ describe.skipIf(!hasBrowser)('end to end', () => {
     }
     expect(new Set(report.findings.map((f) => f.fingerprint)).size).toBe(report.findings.length);
     expect(report.versions.rules['stock-gradient']).toBe(1);
+    expect(report.versions.axe).toMatch(/^\d+\.\d+/);
+    expect(report.categories.map((c) => c.category)).toEqual(['visual', 'content', 'functional', 'accessibility', 'performance', 'seo', 'practices']);
     expect(report.viewports.map((v) => v.name)).toEqual(['desktop', 'mobile']);
     expect(report.failedRoutes.map((r) => r.url)).toEqual([expect.stringContaining('/careers')]);
     const json = JSON.parse(readFileSync(files.json!, 'utf8'));

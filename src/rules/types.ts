@@ -26,6 +26,8 @@ export interface FindingInput {
   evidence: Evidence[];
   routes?: string[];
   title?: string;
+  /** For rules that emit several independent checks (axe), a per-check id such as `axe/color-contrast`. */
+  ruleId?: string;
 }
 
 export interface Rule extends RuleMeta {
@@ -44,7 +46,7 @@ export type DraftFinding = Omit<Finding, 'id' | 'fingerprint'>;
 
 export function toDraft(rule: Rule, input: FindingInput, source: Finding['source']): DraftFinding {
   return {
-    ruleId: rule.id,
+    ruleId: input.ruleId ?? rule.id,
     ruleVersion: rule.version ?? 1,
     title: input.title ?? rule.title,
     category: rule.category,

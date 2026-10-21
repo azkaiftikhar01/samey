@@ -29,6 +29,7 @@ program
   .option('--dev', 'development mode: allow --url to point at localhost or a private network address')
   .option('--port <port>', 'port the dev server listens on', int('port'), DEFAULTS.port)
   .option('--max-routes <n>', 'maximum pages to render', int('max-routes'), DEFAULTS.maxRoutes)
+  .option('--concurrency <n>', 'pages audited at the same time', int('concurrency'), DEFAULTS.concurrency)
   .option('--timeout <seconds>', 'navigation timeout per page', int('timeout'), DEFAULTS.navTimeoutMs / 1000)
   .option('--route <path...>', 'extra routes to audit, e.g. --route /pricing /about')
   .addOption(new Option('--format <format>', 'report output').choices(['html', 'json', 'both']).default('both'))
@@ -71,6 +72,7 @@ program
       dev: !!o.dev,
       port: pick(o.port, 'port', file.port),
       maxRoutes: pick(o.maxRoutes, 'maxRoutes', file.maxRoutes),
+      concurrency: pick(o.concurrency, 'concurrency', file.concurrency),
       navTimeoutMs: src('timeout') === 'default' && file.navTimeoutMs ? file.navTimeoutMs : o.timeout * 1000,
       pageTimeoutMs: file.pageTimeoutMs ?? DEFAULTS.pageTimeoutMs,
       serverTimeoutMs: file.serverTimeoutMs ?? DEFAULTS.serverTimeoutMs,

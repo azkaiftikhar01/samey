@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { checkModel, critiqueScreens } from './ai/local-model.js';
 import type { AuditOptions } from './config.js';
+import { axeVersion } from './render/axe.js';
 import { BrowserMissingError, crawl, launchBrowser, VIEWPORTS } from './render/crawl.js';
 import { serveStatic, startDevServer, type RunningServer } from './render/server.js';
 import { renderHtml } from './report/html.js';
@@ -124,6 +125,7 @@ export async function runAudit(opts: AuditOptions): Promise<AuditResult> {
           crawlResult = await crawl(browser, {
             startUrl: target,
             maxRoutes: opts.maxRoutes,
+            concurrency: opts.concurrency,
             navTimeoutMs: opts.navTimeoutMs,
             pageTimeoutMs: opts.pageTimeoutMs,
             seeds: [...opts.routes, ...(isLocalProject && repo ? repo.routeHints : [])],
@@ -181,6 +183,8 @@ export async function runAudit(opts: AuditOptions): Promise<AuditResult> {
   const all = [...findings, ...modelFindings];
   const { score, categories } = scoreFindings(all, coverage, rulePenalties());
   coverage.limitations = limitations(coverage, categories.filter((c) => c.score === null).map((c) => CATEGORY_LABELS[c.category]));
+  const axeFailed = (crawlResult?.pages ?? []).filter((p) => p.desktop && !Array.isArray(p.desktop.axe));
+  if (axeFailed.length) coverage.limitations.push(`axe-core could not run on ${axeFailed.length} page${axeFailed.length === 1 ? '' : 's'} (${axeFailed[0].desktop?.axeError ?? 'unknown error'}); samey's own accessibility checks were used there instead.`);
   const pages = crawlResult?.pages ?? [];
   const projectKey = repo?.root ?? (opts.url ? new URL(opts.url).origin : 'unknown');
   const report: AuditReport = {
@@ -196,7 +200,7 @@ export async function runAudit(opts: AuditOptions): Promise<AuditResult> {
     categories,
     findings: prioritize(all),
     coverage,
-    versions: { scoring: SCORING.version, rules: ruleVersions(), model: coverage.model.enabled ? coverage.model.name : undefined },
+    versions: { scoring: SCORING.version, rules: ruleVersions(), axe: crawlResult ? axeVersion() : undefined, model: coverage.model.enabled ? coverage.model.name : undefined },
     viewports: crawlResult ? (['desktop', 'mobile'] as const).map((name) => ({ name, width: VIEWPORTS[name].width, height: VIEWPORTS[name].height })) : [],
     failedRoutes: pages
       .filter((p) => !p.desktop)
@@ -245,7 +249,7 @@ function limitations(c: Coverage, unmeasured: string[]): string[] {
   if (robots) out.push(`${robots} page${robots === 1 ? ' was' : 's were'} skipped because robots.txt disallows them.`);
   if (c.blockedRequests.length) out.push(`${c.blockedRequests.length}${c.blockedRequests.length === 20 ? '+' : ''} requests were blocked by the network policy (private, loopback, or unsupported addresses).`);
   if (c.networkBudgetExceeded) out.push('The crawl hit its network budget; some resources were not loaded.');
-  if (c.rendered) out.push('Technical quality currently covers page metadata only; performance and asset weight are not measured yet.');
+  if (c.rendered) out.push('Performance is measured through samey\'s network guard: page weight, JavaScript size, images, layout shift, and main-thread blocking are reliable, but load times would be distorted by the guard, so none are reported.');
   if (c.rendered && !c.interactions) out.push('Button click testing was turned off.');
   return out;
 }

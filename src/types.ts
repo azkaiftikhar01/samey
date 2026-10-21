@@ -1,5 +1,5 @@
 export type Severity = 'critical' | 'high' | 'medium' | 'low' | 'info';
-export type Category = 'visual' | 'content' | 'functional' | 'accessibility' | 'technical';
+export type Category = 'visual' | 'content' | 'functional' | 'accessibility' | 'performance' | 'seo' | 'practices';
 export type FindingSource = 'rendered' | 'static' | 'model';
 export type ViewportName = 'desktop' | 'mobile';
 
@@ -161,6 +161,67 @@ export interface ViewportFacts {
   unlabeledInputs: (ElementRef & { type: string })[];
   wordCount: number;
   rootFontSize: number;
+  perf?: PerfFacts;
+  seo?: SeoFacts;
+  practices?: PracticeFacts;
+  /** axe-core violations; undefined when axe did not run, with axeError saying why. */
+  axe?: AxeViolation[];
+  axeError?: string;
+}
+
+/** Measured in the browser through samey's network guard. Network timing is slowed by the guard, so only
+ *  network-independent signals are kept: layout shift, main-thread blocking, DOM size, and what loads. */
+export interface PerfFacts {
+  domNodes: number;
+  domDepth: number;
+  cls: number;
+  clsSources: (ElementRef & { value: number })[];
+  blockingMs: number;
+  longTasks: number;
+  lcp?: ElementRef & { tag: string; src?: string; lazy: boolean };
+  images: (ElementRef & { src: string; naturalW: number; naturalH: number; lazy: boolean; hasDims: boolean; belowFold: boolean })[];
+  renderBlocking: { url: string; kind: 'script' | 'stylesheet' }[];
+}
+
+export interface SeoFacts {
+  canonical: string[];
+  robots: string | null;
+  viewport: string | null;
+  og: { title?: string; description?: string; image?: string };
+  twitterCard: string | null;
+  jsonLd: { valid: boolean; types: string[]; error?: string }[];
+  uncrawlableLinks: (ElementRef & { text: string })[];
+}
+
+export interface PracticeFacts {
+  compatMode: string;
+  charsetMeta: boolean;
+  distortedImages: (ElementRef & { src: string; natural: string; rendered: string })[];
+  libraries: { name: string; version: string }[];
+  favicon: boolean;
+}
+
+/** One network resource a page loaded, joined from the guard's log. */
+export interface ResourceFact {
+  url: string;
+  type: string;
+  bytes: number;
+  status: number;
+  encoding?: string;
+  cacheControl?: string;
+  contentType?: string;
+  sameOrigin: boolean;
+}
+
+export interface AxeViolation {
+  id: string;
+  impact: 'minor' | 'moderate' | 'serious' | 'critical' | string;
+  help: string;
+  description: string;
+  helpUrl: string;
+  tags: string[];
+  nodeCount: number;
+  nodes: { target: string; html: string; summary: string; rect?: Rect }[];
 }
 
 export interface InteractionResult extends ElementRef {
@@ -180,6 +241,9 @@ export interface PageFacts {
   desktop?: ViewportFacts;
   mobile?: ViewportFacts;
   interactions: InteractionResult[];
+  /** Response headers of the page document (lower-cased names). */
+  headers?: Record<string, string>;
+  resources?: ResourceFact[];
 }
 
 export interface CrawlResult {
@@ -190,6 +254,7 @@ export interface CrawlResult {
   discovered: number;
   limitHit: boolean;
   network: { blocked: { url: string; reason: string }[]; requests: number; bytes: number; budgetExceeded: boolean; navRedirects?: Map<string, string> };
+  site?: { robotsTxt: { status: number | null; disallowAll: boolean }; sitemap: { status: number | null; urls: number } };
 }
 
 // ---------------------------------------------------------------------------
@@ -262,7 +327,7 @@ export interface AuditReport {
   categories: CategoryScore[];
   findings: Finding[];
   coverage: Coverage;
-  versions: { scoring: string; rules: Record<string, number>; model?: string };
+  versions: { scoring: string; rules: Record<string, number>; axe?: string; model?: string };
   viewports: { name: ViewportName; width: number; height: number }[];
   failedRoutes: { url: string; reason: string }[];
   repo?: { name?: string; frameworks: string[]; fileCount: number; truncated: boolean };

@@ -3,7 +3,9 @@ import path from 'node:path';
 import type { Browser, BrowserContext, Page } from 'playwright';
 import { guardedFetch, guardedRequest } from '../security/fetch.js';
 import { BlockedError, checkUrlSyntax, displayUrl, type NetworkPolicy } from '../security/net-policy.js';
-import type { CrawlResult, PageFacts, ViewportFacts, ViewportName } from '../types.js';
+import type { CrawlResult, PageFacts, ResourceFact, ViewportFacts, ViewportName } from '../types.js';
+import { runAxe } from './axe.js';
+import { extractExtras, PERF_INIT_SCRIPT } from './extract-extra.js';
 import { extractViewportFacts } from './extract.js';
 import { testInteractions } from './interact.js';
 import { DEFAULT_LIMITS, guardContext, newNetworkLog, type NetworkLimits, type NetworkLog } from './network.js';
@@ -18,6 +20,8 @@ export interface CrawlOptions {
   shotsDir?: string;
   interact: boolean;
   respectRobots: boolean;
+  /** Pages audited at the same time. */
+  concurrency?: number;
   policy: NetworkPolicy;
   limits?: NetworkLimits;
   onProgress?: (message: string) => void;
@@ -176,19 +180,34 @@ async function auditViewport(
   shotFile: string | undefined,
   origin: string,
   network: NetworkLog,
-): Promise<{ facts?: ViewportFacts; status: number | null; error?: string; finalUrl: string; contentType?: string; page: Page }> {
+): Promise<{ facts?: ViewportFacts; status: number | null; error?: string; finalUrl: string; contentType?: string; page: Page; headers?: Record<string, string>; requested: { url: string; type: string }[] }> {
   const page = await context.newPage();
   page.setDefaultTimeout(opts.pageTimeoutMs);
   attach(page, origin, sink, network);
   let status: number | null = null;
   let contentType: string | undefined;
+  let headers: Record<string, string> | undefined;
+  const requested: { url: string; type: string }[] = [];
+  page.on('request', (r) => {
+    if (requested.length < 2000) requested.push({ url: r.url(), type: r.resourceType() });
+  });
   try {
     const res = await gotoGuarded(page, url, opts, network);
     status = res?.status() ?? null;
-    contentType = res?.headers()['content-type'];
-    if (contentType && !/html/i.test(contentType)) return { status, finalUrl: page.url(), contentType, page };
+    headers = res?.headers();
+    contentType = headers?.['content-type'];
+    if (contentType && !/html/i.test(contentType)) return { status, finalUrl: page.url(), contentType, page, headers, requested };
     await settle(page, opts.pageTimeoutMs);
+    // Read layout-shift and long-task data before samey's own scripts add work to the main thread.
+    const extras = viewport === 'desktop' ? await extractExtras(page).catch(() => undefined) : undefined;
     const facts = await extractViewportFacts(page, viewport);
+    if (extras) Object.assign(facts, extras);
+    // axe-core: full WCAG A/AA + best-practice on desktop; on mobile only target size depends on the viewport.
+    try {
+      facts.axe = await runAxe(page, { rules: viewport === 'mobile' ? ['target-size'] : undefined, timeoutMs: Math.min(opts.pageTimeoutMs, 30_000) });
+    } catch (err) {
+      facts.axeError = (err as Error).message.split('\n')[0].slice(0, 200);
+    }
     try {
       const h = await capture(page, viewport, shotFile);
       if (h && shotFile) {
@@ -198,10 +217,30 @@ async function auditViewport(
     } catch {
       // A failed screenshot should not lose the extracted facts.
     }
-    return { facts, status, finalUrl: page.url(), contentType, page };
+    return { facts, status, finalUrl: page.url(), contentType, page, headers, requested };
   } catch (err) {
-    return { status, error: (err as Error).message.split('\n')[0].slice(0, 300), finalUrl: page.url(), contentType, page };
+    return { status, error: (err as Error).message.split('\n')[0].slice(0, 300), finalUrl: page.url(), contentType, page, headers, requested };
   }
+}
+
+/** Joins what a page requested with what the guard actually served (size, compression, caching). */
+function joinResources(requested: { url: string; type: string }[], network: NetworkLog, origin: string): ResourceFact[] {
+  const seen = new Set<string>();
+  const out: ResourceFact[] = [];
+  for (const r of requested) {
+    if (seen.has(r.url)) continue;
+    seen.add(r.url);
+    const served = network.resources.get(r.url);
+    if (!served) continue;
+    let sameOrigin = false;
+    try {
+      sameOrigin = new URL(r.url).origin === origin;
+    } catch {
+      /* data: and blob: URLs */
+    }
+    out.push({ url: r.url, type: r.type, bytes: served.bytes, status: served.status, encoding: served.encoding, cacheControl: served.cacheControl, contentType: served.contentType, sameOrigin });
+  }
+  return out;
 }
 
 export async function crawl(browser: Browser, opts: CrawlOptions): Promise<CrawlResult> {
@@ -223,6 +262,8 @@ export async function crawl(browser: Browser, opts: CrawlOptions): Promise<Crawl
   const network = newNetworkLog();
   await guardContext(desktop, opts.policy, limits, network);
   await guardContext(mobile, opts.policy, limits, network);
+  await desktop.addInitScript(PERF_INIT_SCRIPT);
+  await mobile.addInitScript(PERF_INIT_SCRIPT);
   const fetchOpts = { policy: opts.policy, maxBytes: 2 * 1024 * 1024, timeoutMs: Math.min(opts.navTimeoutMs, 10_000), headers: { 'user-agent': 'samey' } };
 
   // If the start URL redirects (example.com to www.example.com, http to https), crawl the site it lands on.
@@ -238,10 +279,14 @@ export async function crawl(browser: Browser, opts: CrawlOptions): Promise<Crawl
   const result: CrawlResult = { baseUrl: startUrl, pages: [], skipped: [], brokenLinks: [], discovered: 0, limitHit: false, network };
 
   let robots: RobotsRules = { allow: [], disallow: [] };
-  if (opts.respectRobots) {
-    const res = await guardedFetch(origin + '/robots.txt', fetchOpts).catch(() => null);
-    if (res && res.status === 200) robots = parseRobots(res.body.toString('utf8'));
-  }
+  const robotsRes = await guardedFetch(origin + '/robots.txt', fetchOpts).catch(() => null);
+  const robotsOk = !!robotsRes && robotsRes.status === 200 && !/html/i.test(String(robotsRes.headers['content-type'] ?? ''));
+  const robotsAll = robotsOk ? parseRobots(robotsRes!.body.toString('utf8')) : robots;
+  if (opts.respectRobots) robots = robotsAll;
+  result.site = {
+    robotsTxt: { status: robotsRes ? (robotsOk ? 200 : robotsRes.status === 200 ? 404 : robotsRes.status) : null, disallowAll: robotsOk && !isAllowed(robotsAll, '/') },
+    sitemap: { status: null, urls: 0 },
+  };
 
   const queue: URL[] = [];
   const seen = new Set<string>();
@@ -258,42 +303,50 @@ export async function crawl(browser: Browser, opts: CrawlOptions): Promise<Crawl
   enqueue(normalizeLink(startUrl, startUrl));
   for (const s of opts.seeds) enqueue(normalizeLink(s, startUrl), '(route hint)');
   const sitemap = await guardedFetch(origin + '/sitemap.xml', fetchOpts).catch(() => null);
-  if (sitemap && sitemap.status === 200 && /xml/i.test(String(sitemap.headers['content-type'] ?? ''))) {
-    const xml = sitemap.body.toString('utf8');
+  const sitemapOk = !!sitemap && sitemap.status === 200 && /xml/i.test(String(sitemap.headers['content-type'] ?? ''));
+  result.site.sitemap = { status: sitemap ? (sitemapOk ? 200 : sitemap.status === 200 ? 404 : sitemap.status) : null, urls: 0 };
+  if (sitemapOk) {
+    const xml = sitemap!.body.toString('utf8');
+    result.site.sitemap.urls = (xml.match(/<loc>/g) ?? []).length;
     for (const m of xml.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/g)) enqueue(normalizeLink(m[1], startUrl), '(sitemap)');
   }
 
   const crawled = new Set<string>();
-  while (queue.length && result.pages.length < opts.maxRoutes) {
-    const u = queue.shift()!;
+  const done: { index: number; facts: PageFacts }[] = [];
+  let reserved = 0;
+  let inFlight = 0;
+  let seq = 0;
+
+  /** Audits one URL at both viewports. Returns false when it was skipped and should not count toward the limit. */
+  const processOne = async (u: URL, index: number): Promise<boolean> => {
     const key = urlKey(u);
     if (opts.respectRobots && !isAllowed(robots, u.pathname)) {
       result.skipped.push({ url: u.href, reason: 'disallowed by robots.txt' });
-      continue;
+      return false;
     }
-    opts.onProgress?.(`Auditing ${u.pathname} (page ${result.pages.length + 1}, limit ${opts.maxRoutes})`);
+    opts.onProgress?.(`Auditing ${u.pathname} (${reserved}/${opts.maxRoutes} max)`);
     const sink: Listeners = { consoleErrors: [], failedRequests: [] };
     const begin = Date.now();
-    const shot = (vp: ViewportName) => (opts.shotsDir ? path.join(opts.shotsDir, `${String(result.pages.length + 1).padStart(2, '0')}-${slug(u.pathname)}-${vp}.jpg`) : undefined);
+    const shot = (vp: ViewportName) => (opts.shotsDir ? path.join(opts.shotsDir, `${String(index).padStart(2, '0')}-${slug(u.pathname)}-${vp}.jpg`) : undefined);
 
     const d = await auditViewport(desktop, u.href, 'desktop', opts, sink, shot('desktop'), origin, network);
     if (d.contentType && !/html/i.test(d.contentType)) {
       result.skipped.push({ url: u.href, reason: `not an HTML page (${d.contentType.split(';')[0]})` });
       await d.page.close();
-      continue;
+      return false;
     }
     const landed = new URL(d.finalUrl || u.href);
     if (landed.origin !== origin && landed.protocol.startsWith('http')) {
       result.skipped.push({ url: u.href, reason: `redirected to another site (${displayUrl(landed.href)})` });
       await d.page.close();
-      continue;
+      return false;
     }
     // Record the page where navigation landed; a second link redirecting to it is not audited twice.
     const landedKey = urlKey(landed);
     if (landedKey !== key && crawled.has(landedKey)) {
       result.skipped.push({ url: u.href, reason: `redirects to ${landed.pathname}, already audited` });
       await d.page.close();
-      continue;
+      return false;
     }
     crawled.add(key);
     crawled.add(landedKey);
@@ -310,6 +363,8 @@ export async function crawl(browser: Browser, opts: CrawlOptions): Promise<Crawl
       // Error pages are reported as broken links; their content is not audited as a real page.
       desktop: (d.status ?? 200) < 400 ? d.facts : undefined,
       interactions: [],
+      headers: d.headers,
+      resources: joinResources(d.requested, network, origin),
     };
 
     if (d.facts) {
@@ -330,8 +385,33 @@ export async function crawl(browser: Browser, opts: CrawlOptions): Promise<Crawl
     facts.consoleErrors = [...new Set(sink.consoleErrors)];
     const seenReq = new Set<string>();
     facts.failedRequests = sink.failedRequests.filter((r) => !seenReq.has(r.url) && !!seenReq.add(r.url));
-    result.pages.push(facts);
-  }
+    done.push({ index, facts });
+    return true;
+  };
+
+  // A small pool of workers shares the queue, which keeps growing as pages reveal new links.
+  const worker = async () => {
+    for (;;) {
+      if (reserved >= opts.maxRoutes) return;
+      const u = queue.shift();
+      if (!u) {
+        if (inFlight === 0) return;
+        await new Promise((r) => setTimeout(r, 50));
+        continue;
+      }
+      reserved++;
+      const index = ++seq;
+      inFlight++;
+      try {
+        if (!(await processOne(u, index))) reserved--;
+      } finally {
+        inFlight--;
+      }
+    }
+  };
+  await Promise.all(Array.from({ length: Math.max(1, opts.concurrency ?? 3) }, worker));
+  // Discovery order, not finishing order, so reports are stable between runs.
+  result.pages = done.sort((a, b) => a.index - b.index).map((d) => d.facts);
 
   result.limitHit = queue.length > 0;
   result.discovered = seen.size;

@@ -9,6 +9,8 @@ export interface GuardedResponse {
   status: number;
   headers: Record<string, string | string[]>;
   body: Buffer;
+  /** Content-Encoding the server sent before samey decoded it. */
+  encoding?: string;
 }
 
 export interface RequestOptions {
@@ -71,7 +73,7 @@ export async function guardedRequest(rawUrl: string, opts: RequestOptions): Prom
             delete out['content-encoding'];
             delete out['content-length'];
           }
-          resolve({ url: target.url.href, status: res.statusCode ?? 0, headers: out, body: Buffer.concat(chunks) });
+          resolve({ url: target.url.href, status: res.statusCode ?? 0, headers: out, body: Buffer.concat(chunks), encoding: enc || undefined });
         });
         stream.on('error', reject);
       },

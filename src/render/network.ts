@@ -26,13 +26,15 @@ export interface NetworkLog {
   navRedirects: Map<string, string>;
   /** Full URLs the guard refused. Their failures are samey's doing, not the site's. */
   blockedUrls: Set<string>;
+  /** Final response facts per URL, for page-weight, compression, and caching checks. */
+  resources: Map<string, { bytes: number; status: number; encoding?: string; cacheControl?: string; contentType?: string }>;
   requests: number;
   bytes: number;
   budgetExceeded: boolean;
 }
 
 export function newNetworkLog(): NetworkLog {
-  return { blocked: [], navRedirects: new Map(), blockedUrls: new Set(), requests: 0, bytes: 0, budgetExceeded: false };
+  return { blocked: [], navRedirects: new Map(), blockedUrls: new Set(), resources: new Map(), requests: 0, bytes: 0, budgetExceeded: false };
 }
 
 /**
@@ -76,6 +78,10 @@ export async function guardContext(context: BrowserContext, policy: NetworkPolic
         res = await send(current, keep ? req.method() : 'GET', keep ? req.postDataBuffer() : null);
       }
       log.bytes += res.body.length;
+      if (log.resources.size < 5000) {
+        const h = (k: string) => (res.headers[k] === undefined ? undefined : String(res.headers[k]));
+        log.resources.set(url, { bytes: res.body.length, status: res.status, encoding: res.encoding, cacheControl: h('cache-control'), contentType: h('content-type') });
+      }
       const headers: Record<string, string> = {};
       for (const [k, v] of Object.entries(res.headers)) {
         if (['transfer-encoding', 'connection', 'keep-alive'].includes(k)) continue;

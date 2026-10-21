@@ -14,6 +14,7 @@ export interface AuditOptions {
   policyOverride?: import('./security/net-policy.js').NetworkPolicy;
   port: number;
   maxRoutes: number;
+  concurrency: number;
   navTimeoutMs: number;
   pageTimeoutMs: number;
   serverTimeoutMs: number;
@@ -37,7 +38,8 @@ export interface AuditOptions {
 export const DEFAULTS: Omit<AuditOptions, 'outDir'> = {
   dev: false,
   port: 4173,
-  maxRoutes: 10,
+  maxRoutes: 20,
+  concurrency: 3,
   navTimeoutMs: 30_000,
   pageTimeoutMs: 20_000,
   serverTimeoutMs: 60_000,
@@ -54,7 +56,7 @@ export const DEFAULTS: Omit<AuditOptions, 'outDir'> = {
 };
 
 /** Keys accepted in samey.config.json. Anything else is rejected so typos surface. */
-const FILE_KEYS = new Set(['maxRoutes', 'navTimeoutMs', 'pageTimeoutMs', 'serverTimeoutMs', 'ignoreRules', 'routes', 'failAbove', 'model', 'modelEndpoint', 'serve', 'port', 'interact', 'respectRobots', 'screenshots']);
+const FILE_KEYS = new Set(['maxRoutes', 'concurrency', 'navTimeoutMs', 'pageTimeoutMs', 'serverTimeoutMs', 'ignoreRules', 'routes', 'failAbove', 'model', 'modelEndpoint', 'serve', 'port', 'interact', 'respectRobots', 'screenshots']);
 
 export function loadConfigFile(dir: string | undefined): Partial<AuditOptions> {
   if (!dir) return {};

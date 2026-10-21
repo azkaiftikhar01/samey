@@ -6,8 +6,9 @@ import type { Category, CategoryScore, Coverage, Finding, Severity } from './typ
  * severe ones. Weights are starting hypotheses to be calibrated against human judgments.
  */
 export const SCORING = {
-  version: '2.0.0',
-  categoryWeights: { visual: 0.4, content: 0.2, functional: 0.15, accessibility: 0.15, technical: 0.1 } as Record<Category, number>,
+  version: '3.0.0',
+  // The brief's 10% 'technical' share is split into performance, SEO, and best practices.
+  categoryWeights: { visual: 0.4, content: 0.2, functional: 0.15, accessibility: 0.15, performance: 0.05, seo: 0.03, practices: 0.02 } as Record<Category, number>,
   severityValues: { info: 0, low: 0.25, medium: 0.5, high: 0.75, critical: 1 } as Record<Severity, number>,
   /** Default rule penalty w. Rules may override it with `penalty`. */
   defaultPenalty: 40,
@@ -20,11 +21,13 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   content: 'Content genericness',
   functional: 'Functional defects',
   accessibility: 'Accessibility and usability',
-  technical: 'Technical quality',
+  performance: 'Performance',
+  seo: 'SEO',
+  practices: 'Best practices',
 };
 
 /** Categories that can only be measured by rendering the site. */
-const RENDER_ONLY = new Set<Category>(['functional', 'accessibility', 'technical']);
+const RENDER_ONLY = new Set<Category>(['functional', 'accessibility', 'performance', 'seo', 'practices']);
 
 /** p = s * c * w, rounded to 0.01 so the score is stable across platforms. */
 export function findingPenalty(f: Pick<Finding, 'severity' | 'confidence' | 'advisory'>, rulePenalty: number = SCORING.defaultPenalty): number {

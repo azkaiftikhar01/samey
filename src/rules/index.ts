@@ -1,13 +1,19 @@
 import { locateText } from '../static/scan.js';
 import type { Finding } from '../types.js';
+import { accessibilityRules } from './accessibility.js';
 import { contentRules } from './content.js';
 import { functionalRules } from './functional.js';
 import { normalizeFindings, validateDraft } from './normalize.js';
+import { performanceRules } from './performance.js';
+import { practiceRules } from './practices.js';
+import { seoRules } from './seo.js';
 import { staticRules } from './static.js';
 import { toDraft, type DraftFinding, type Rule, type RuleContext } from './types.js';
 import { visualRules } from './visual.js';
 
-export const allRules: Rule[] = [...visualRules, ...contentRules, ...functionalRules, ...staticRules];
+export const allRules: Rule[] = [
+  ...visualRules, ...contentRules, ...functionalRules, ...accessibilityRules, ...performanceRules, ...seoRules, ...practiceRules, ...staticRules,
+];
 
 export const ruleVersions = (): Record<string, number> => Object.fromEntries(allRules.map((r) => [r.id, r.version ?? 1]));
 export const rulePenalties = (): Record<string, number | undefined> => Object.fromEntries(allRules.map((r) => [r.id, r.penalty]));

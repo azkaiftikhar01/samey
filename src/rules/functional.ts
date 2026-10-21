@@ -1,5 +1,6 @@
 import type { Evidence } from '../types.js';
 import { truncate } from '../util/text.js';
+import { axeRan } from './accessibility.js';
 import { el, pagesWith, plural, uniqueRoutes } from './helpers.js';
 import type { FindingInput, Rule } from './types.js';
 
@@ -186,6 +187,7 @@ export const unresponsiveButtons: Rule = {
 
 export const emptyControls: Rule = {
   id: 'empty-controls',
+  version: 2,
   title: 'Buttons and links without an accessible name',
   category: 'accessibility',
   needs: 'rendered',
@@ -193,7 +195,7 @@ export const emptyControls: Rule = {
   description: 'Interactive elements with no text, aria-label, or title.',
   run({ crawl }) {
     const ev: Evidence[] = [];
-    for (const { page, facts } of pagesWith(crawl, 'desktop')) {
+    for (const { page, facts } of pagesWith(crawl, 'desktop').filter(({ page }) => !axeRan(page, 'desktop'))) {
       for (const c of facts.controls) if (!c.name.trim()) ev.push(el(page, 'desktop', c, `<${c.tag}>`));
       for (const l of facts.links) if (!l.text.trim() && !facts.controls.some((c) => c.selector === l.selector)) ev.push(el(page, 'desktop', l, `<a href="${truncate(l.href, 60)}">`));
     }
@@ -237,6 +239,7 @@ export const brokenImages: Rule = {
 
 export const missingAlt: Rule = {
   id: 'missing-alt',
+  version: 2,
   title: 'Images without alt text',
   category: 'accessibility',
   needs: 'rendered',
@@ -244,7 +247,7 @@ export const missingAlt: Rule = {
   description: 'Images with no alt attribute.',
   run({ crawl }) {
     const ev: Evidence[] = [];
-    for (const { page, facts } of pagesWith(crawl, 'desktop')) for (const i of facts.images) if (i.alt === null && !i.decorative) ev.push(el(page, 'desktop', i, truncate(i.src, 120)));
+    for (const { page, facts } of pagesWith(crawl, 'desktop').filter(({ page }) => !axeRan(page, 'desktop'))) for (const i of facts.images) if (i.alt === null && !i.decorative) ev.push(el(page, 'desktop', i, truncate(i.src, 120)));
     if (!ev.length) return [];
     return [
       {
@@ -261,6 +264,7 @@ export const missingAlt: Rule = {
 
 export const unlabeledInputs: Rule = {
   id: 'unlabeled-inputs',
+  version: 2,
   title: 'Form fields without labels',
   category: 'accessibility',
   needs: 'rendered',
@@ -268,7 +272,7 @@ export const unlabeledInputs: Rule = {
   description: 'Inputs with no associated label or aria-label. Placeholders are not labels.',
   run({ crawl }) {
     const ev: Evidence[] = [];
-    for (const { page, facts } of pagesWith(crawl, 'desktop')) for (const i of facts.unlabeledInputs) ev.push(el(page, 'desktop', i, `<${i.type}>`));
+    for (const { page, facts } of pagesWith(crawl, 'desktop').filter(({ page }) => !axeRan(page, 'desktop'))) for (const i of facts.unlabeledInputs) ev.push(el(page, 'desktop', i, `<${i.type}>`));
     if (!ev.length) return [];
     return [
       {
@@ -285,6 +289,7 @@ export const unlabeledInputs: Rule = {
 
 export const headingStructure: Rule = {
   id: 'heading-structure',
+  version: 2,
   title: 'Heading structure problems',
   category: 'accessibility',
   needs: 'rendered',
@@ -292,7 +297,7 @@ export const headingStructure: Rule = {
   description: 'Pages with no h1, several h1s, or skipped heading levels.',
   run({ crawl }) {
     const ev: Evidence[] = [];
-    for (const { page, facts } of pagesWith(crawl, 'desktop')) {
+    for (const { page, facts } of pagesWith(crawl, 'desktop').filter(({ page }) => !axeRan(page, 'desktop'))) {
       const h1 = facts.headings.filter((h) => h.level === 1);
       if (h1.length === 0) ev.push({ type: 'metric', route: page.path, detail: 'no h1' });
       if (h1.length > 1) ev.push({ type: 'metric', route: page.path, detail: `${h1.length} h1 elements` });
@@ -312,38 +317,6 @@ export const headingStructure: Rule = {
         confidence: 0.9,
         description: `${plural(uniqueRoutes(ev).length, 'page')} have heading structure problems. Headings are how assistive technology users skim a page.`,
         recommendation: 'Use exactly one h1 per page and do not skip levels; style headings with CSS instead of picking tags for their size.',
-        evidence: ev,
-        routes: uniqueRoutes(ev),
-      },
-    ];
-  },
-};
-
-export const missingMetadata: Rule = {
-  id: 'missing-metadata',
-  title: 'Missing page metadata',
-  category: 'technical',
-  needs: 'rendered',
-  verified: true,
-  penalty: 25,
-  description: 'Missing <title>, meta description, or html lang attribute.',
-  run({ crawl }) {
-    const ev: Evidence[] = [];
-    const titles = new Map<string, string[]>();
-    for (const { page, facts } of pagesWith(crawl, 'desktop')) {
-      if (!facts.title.trim()) ev.push({ type: 'metric', route: page.path, detail: 'no <title>' });
-      else titles.set(facts.title, [...(titles.get(facts.title) ?? []), page.path]);
-      if (!facts.metaDescription) ev.push({ type: 'metric', route: page.path, detail: 'no meta description' });
-      if (!facts.lang) ev.push({ type: 'metric', route: page.path, detail: 'no lang attribute on <html>' });
-    }
-    for (const [t, pages] of titles) if (pages.length >= 3) ev.push({ type: 'metric', route: pages[0], detail: `${pages.length} pages share the title "${truncate(t, 60)}"` });
-    if (!ev.length) return [];
-    return [
-      {
-        severity: 'low',
-        confidence: 0.9,
-        description: `${plural(ev.length, 'metadata gap')} across ${plural(uniqueRoutes(ev).length, 'page')}.`,
-        recommendation: 'Give each page a unique title and description, and set <html lang>.',
         evidence: ev,
         routes: uniqueRoutes(ev),
       },
@@ -385,6 +358,7 @@ export const horizontalOverflow: Rule = {
 
 export const smallTargets: Rule = {
   id: 'small-touch-targets',
+  version: 2,
   title: 'Touch targets too small',
   category: 'accessibility',
   needs: 'rendered',
@@ -392,7 +366,7 @@ export const smallTargets: Rule = {
   description: 'Buttons and links smaller than 24x24 CSS pixels on mobile.',
   run({ crawl }) {
     const ev: Evidence[] = [];
-    for (const { page, facts } of pagesWith(crawl, 'mobile')) for (const t of facts.smallTargets) ev.push(el(page, 'mobile', t, t.text || undefined, `${t.w}x${t.h}px`));
+    for (const { page, facts } of pagesWith(crawl, 'mobile').filter(({ page }) => !axeRan(page, 'mobile'))) for (const t of facts.smallTargets) ev.push(el(page, 'mobile', t, t.text || undefined, `${t.w}x${t.h}px`));
     if (!ev.length) return [];
     return [
       {
@@ -434,5 +408,5 @@ export const tinyText: Rule = {
 
 export const functionalRules: Rule[] = [
   pageLoadFailed, brokenLinks, consoleErrors, failedRequests, deadLinks, unresponsiveButtons, emptyControls, brokenImages,
-  missingAlt, unlabeledInputs, headingStructure, missingMetadata, horizontalOverflow, smallTargets, tinyText,
+  missingAlt, unlabeledInputs, headingStructure, horizontalOverflow, smallTargets, tinyText,
 ];
