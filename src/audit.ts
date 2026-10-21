@@ -7,6 +7,7 @@ import type { AuditOptions } from './config.js';
 import { BrowserMissingError, crawl, launchBrowser, VIEWPORTS } from './render/crawl.js';
 import { serveStatic, startDevServer, type RunningServer } from './render/server.js';
 import { renderHtml } from './report/html.js';
+import { fullPrompt } from './report/prompt.js';
 import { rulePenalties, ruleVersions, runRules } from './rules/index.js';
 import { normalizeFindings } from './rules/normalize.js';
 import { CATEGORY_LABELS, prioritize, SCORING, scoreFindings } from './score.js';
@@ -25,7 +26,7 @@ export function toolVersion(): string {
 
 export interface AuditResult {
   report: AuditReport;
-  files: { html?: string; json?: string };
+  files: { html?: string; json?: string; prompt?: string };
   ruleErrors: { ruleId: string; message: string }[];
 }
 
@@ -216,6 +217,13 @@ export async function runAudit(opts: AuditOptions): Promise<AuditResult> {
   };
 
   const files: AuditResult['files'] = {};
+  // A ready-to-paste prompt for an AI coding agent, so fixing does not start with copying from the report.
+  const promptFile = path.join(outDir, 'fix-prompt.md');
+  const prompt = fullPrompt(report);
+  if (prompt) {
+    writeFileSync(promptFile, prompt);
+    files.prompt = promptFile;
+  } else rmSync(promptFile, { force: true });
   if (opts.formats.includes('json')) {
     files.json = path.join(outDir, 'report.json');
     writeFileSync(files.json, JSON.stringify(report, null, 2));

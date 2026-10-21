@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 import { Command, InvalidArgumentError, Option } from 'commander';
 import { spawnSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import pc from 'picocolors';
 import { runAudit, toolVersion } from './audit.js';
 import { DEFAULTS, loadConfigFile, type AuditOptions } from './config.js';
 import { allRules } from './rules/index.js';
+import { fullPrompt } from './report/prompt.js';
 import { summarize } from './report/terminal.js';
 
 const int = (name: string, min = 1) => (v: string) => {
@@ -113,6 +115,29 @@ program
       console.error(pc.red(`\n  Audit failed: ${(err as Error).message}\n`));
       process.exitCode = 2;
     }
+  });
+
+program
+  .command('prompt')
+  .description('Print a fix prompt for an AI coding agent from the last audit')
+  .argument('[path]', 'project directory that was audited', '.')
+  .option('-o, --out <dir>', 'output directory used by the audit (default: <path>/.samey)')
+  .option('--only-defects', 'leave out design observations and include measured defects only')
+  .action((target: string, o) => {
+    const file = path.join(o.out ? path.resolve(o.out) : path.join(path.resolve(target), '.samey'), 'report.json');
+    let report;
+    try {
+      report = JSON.parse(readFileSync(file, 'utf8'));
+    } catch {
+      console.error(pc.red(`  No report at ${file}. Run \`npx samey audit\` first.`));
+      process.exit(2);
+    }
+    const text = fullPrompt(report, { onlyDefects: !!o.onlyDefects });
+    if (!text) {
+      console.error('  The last audit found nothing to fix.');
+      return;
+    }
+    process.stdout.write(text);
   });
 
 program

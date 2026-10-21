@@ -11,7 +11,7 @@ const SEV_COLOR: Record<Severity, (s: string) => string> = {
   info: pc.dim,
 };
 
-export function summarize(report: AuditReport, files: { html?: string; json?: string }): string {
+export function summarize(report: AuditReport, files: { html?: string; json?: string; prompt?: string }): string {
   const out: string[] = [];
   const scored = report.findings.filter((f) => !f.advisory);
   const cov = report.coverage;
@@ -61,6 +61,14 @@ export function summarize(report: AuditReport, files: { html?: string; json?: st
   };
   if (files.html) out.push(`  Report  ${pc.underline(rel(files.html))}`);
   if (files.json) out.push(`  JSON    ${rel(files.json)}`);
+  if (files.prompt) {
+    out.push(`  Prompt  ${rel(files.prompt)}`);
+    // Spell out the exact command, since `samey prompt` looks in <path>/.samey unless told otherwise.
+    const dir = path.dirname(files.prompt);
+    const base = report.target.path ?? process.cwd();
+    const arg = dir === path.join(base, '.samey') ? (rel(base) === base ? (report.target.path ? ` ${base}` : '') : rel(base) ? ` ${rel(base)}` : '') : ` --out ${rel(dir)}`;
+    out.push(pc.dim(`          Paste it into Claude Code, Cursor or Codex, or copy it: npx samey prompt${arg}${process.platform === 'darwin' ? ' | pbcopy' : ''}`));
+  }
   out.push('');
   return out.join('\n');
 }

@@ -32,6 +32,13 @@ describe('repository scan', () => {
     expect(locateText(site.files, 'short', 1)).toEqual([]);
   });
 
+  it('does not treat shared document boilerplate as copied markup', () => {
+    const head = (t: string) => `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>${t}</title>\n<link rel="stylesheet" href="/styles.css">\n</head>\n<body>\n<main><h1>${t}</h1></main>\n</body>\n</html>\n`;
+    const files = ['a', 'b', 'c'].map((n) => ({ path: `${n}.html`, ext: '.html', content: head(n) }));
+    const repo = { root: '/x', frameworks: [], scripts: {}, files, fileCount: 3, truncated: false, routeHints: [] };
+    expect(runRules({ repo }).findings.map((f) => f.ruleId)).not.toContain('duplicated-markup');
+  });
+
   it('serves a plain HTML project as-is', () => {
     expect(scanRepo(path.resolve(__dirname, '../fixtures/clean-site')).staticRoot).toBe(path.resolve(__dirname, '../fixtures/clean-site'));
   });

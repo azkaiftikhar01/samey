@@ -249,6 +249,8 @@ export const duplicatedMarkup: Rule = {
       raw.forEach((l, i) => {
         // Compare structure, not wording: three hand-written cards that differ only in text are still a copy-paste.
         const t = l.trim().replace(/>[^<>{}]*</g, '><').replace(/>[^<>{}]+$/, '>');
+        // Every HTML page starts with the same document boilerplate; that is not copied component markup.
+        if (/^<(?:!doctype|\/?html|\/?head|meta|link|title|\/?body|script\b[^>]*\bsrc=)/i.test(t)) return;
         if (t.length >= 12 && /[<>]/.test(t)) sig.push({ t, line: i + 1 });
       });
       for (let i = 0; i + SHINGLE <= sig.length; i++) {

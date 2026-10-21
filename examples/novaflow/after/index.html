@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NovaFlow: runbooks from the Slack threads your team already wrote</title>
+<meta name="description" content="NovaFlow turns the Slack thread where someone figured out a fix into a checklist the next person on call can run.">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="site-head"><div class="wrap"><a class="logo" href="/">NovaFlow</a><nav aria-label="Main"><a href="/features">How it works</a><a href="/about">About</a><a href="/#pricing">Pricing</a></nav></div></header>
+<main class="wrap">
+  <div class="hero">
+    <div>
+      <h1>Turn the Slack thread into a checklist the next person can run</h1>
+      <p class="lead">Somebody rotated the API keys at 2am and explained it across forty messages. NovaFlow pulls the commands and decisions out of that thread and gives the next on-call engineer a numbered runbook with owners.</p>
+      <a class="btn" href="#example">See an example runbook</a><a class="btn-quiet" href="#pricing">Pricing</a>
+    </div>
+    <figure class="runbook" aria-label="Example runbook preview">
+      <header><b>Rotate the Stripe API key</b><span>from #payments-oncall, 14 Sep</span></header>
+      <ol>
+        <li><span>Create a restricted key in the Stripe dashboard with the same scopes</span></li>
+        <li><span>Update <code>STRIPE_SECRET_KEY</code> in the production secrets store</span></li>
+        <li><span>Redeploy the billing worker and watch the webhook error rate for ten minutes</span></li>
+      </ol>
+    </figure>
+  </div>
+
+  <section class="split">
+    <h2>How it works</h2>
+    <ol class="steps">
+      <li><strong>Pick a thread.</strong> Add the NovaFlow app to a channel and react to a thread with the runbook emoji, or paste its link.</li>
+      <li><strong>Review the draft.</strong> NovaFlow lists the commands, links, and decisions it found, in order. You remove the dead ends and confirm the owner of each step.</li>
+      <li><strong>Run it next time.</strong> The runbook lives at a stable link. Whoever is on call ticks steps off, and the thread it came from stays linked for context.</li>
+    </ol>
+  </section>
+
+  <section id="example">
+    <h2>An example runbook</h2>
+    <p>This is what the Stripe key rotation thread became. Try ticking the steps.</p>
+    <div class="runbook">
+      <header><b>Rotate the Stripe API key</b><span>Owner: payments on call · last run 14 Sep · 12 minutes</span></header>
+      <ol>
+        <li><span>Create a restricted key with the same scopes as the current one</span><button class="toggle" type="button" aria-pressed="false">Mark done</button></li>
+        <li><span>Update <code>STRIPE_SECRET_KEY</code> in the production secrets store</span><button class="toggle" type="button" aria-pressed="false">Mark done</button></li>
+        <li><span>Redeploy the billing worker</span><button class="toggle" type="button" aria-pressed="false">Mark done</button></li>
+        <li><span>Watch the webhook error rate for ten minutes, then revoke the old key</span><button class="toggle" type="button" aria-pressed="false">Mark done</button></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <h2>Pricing</h2>
+    <p>Billed monthly, cancel from the settings page at any time.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th scope="col">Plan</th><th scope="col">Price</th><th scope="col">What you get</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Free</th><td>£0</td><td>Five runbooks, one Slack workspace</td></tr>
+          <tr><th scope="row">Team</th><td>£6 per person a month</td><td>Unlimited runbooks, owners, and run history</td></tr>
+          <tr><th scope="row">Company</th><td>Talk to us</td><td>SSO, audit log export, and a data processing agreement</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Questions people ask</h2>
+    <details><summary>Does NovaFlow read every channel?</summary><p>No. It only reads threads you send it, and only in channels where the app has been added.</p></details>
+    <details><summary>Can we edit a runbook after it is created?</summary><p>Yes. Every edit is kept in the run history, so you can see what changed after an incident.</p></details>
+  </section>
+</main>
+<script src="/checklist.js"></script>
+<footer class="site-foot"><div class="wrap"><div><a href="/privacy">Privacy</a><a href="mailto:hello@novaflow.dev">hello@novaflow.dev</a></div><div>NovaFlow Ltd, registered in England and Wales.</div></div></footer>
+</body></html>

@@ -48,6 +48,9 @@ describe.skipIf(!hasBrowser)('end to end', () => {
     expect(json.schemaVersion).toBe(1);
     expect(json.scanId).toBe(report.scanId);
 
+    const prompt = readFileSync(files.prompt!, 'utf8');
+    expect(prompt).toContain('## Defects (measured, fix these)');
+    expect(prompt).toContain('[placeholder-links]');
     const html = readFileSync(files.html!, 'utf8');
     expect(html).toContain('data:image/jpeg;base64,');
     expect(html).not.toMatch(/<script[^>]+src=|<link[^>]+href="http/); // self-contained

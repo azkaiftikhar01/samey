@@ -1,0 +1,23 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Inter, system-ui, sans-serif; background: #0b0b14; color: #e5e7eb; }
+nav { position: sticky; top: 0; display: flex; justify-content: space-between; padding: 16px 40px; backdrop-filter: blur(12px); background: rgba(11,11,20,.6); }
+nav a { color: #c4b5fd; margin-left: 18px; text-decoration: none; font-size: 14px; }
+.hero { position: relative; text-align: center; padding: 120px 24px 100px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%); overflow: hidden; }
+.hero h1 { font-size: 64px; margin: 0 auto 20px; max-width: 900px; background: linear-gradient(90deg, #c084fc, #f472b6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero p { font-size: 20px; max-width: 640px; margin: 0 auto 32px; }
+.blob { position: absolute; width: 400px; height: 400px; border-radius: 50%; background: #a855f7; filter: blur(80px); top: -100px; left: -100px; opacity: .6; }
+.btn { display: inline-block; padding: 14px 28px; border-radius: 9999px; background: #7c3aed; color: white; text-decoration: none; margin: 0 6px; box-shadow: 0 0 40px rgba(168, 85, 247, .6); border: 0; font-size: 16px; }
+section { padding: 80px 24px; text-align: center; }
+section h2 { font-size: 40px; margin: 0 0 16px; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1100px; margin: 40px auto 0; }
+.card { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 18px; padding: 28px; text-align: left; box-shadow: 0 0 30px rgba(99, 102, 241, .35); backdrop-filter: blur(10px); }
+.card h3 { margin: 0 0 8px; font-size: 21px; }
+.card p { margin: 0; color: #9ca3af; font-size: 15px; }
+.logos { display: flex; justify-content: center; gap: 40px; opacity: .7; }
+.logos img { width: 120px; height: 40px; }
+.wide { width: 600px; height: 20px; margin: 0 auto; }
+.price { font-size: 44px; font-weight: 700; }
+details { max-width: 700px; margin: 12px auto; text-align: left; background: rgba(255,255,255,.04); padding: 16px; border-radius: 12px; }
+footer { padding: 40px; text-align: center; font-size: 11px; color: #6b7280; }
+footer a { color: #9ca3af; margin: 0 8px; font-size: 11px; }
+.icon-btn { width: 18px; height: 18px; border-radius: 4px; background: #312e81; border: 0; }

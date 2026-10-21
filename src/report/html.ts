@@ -3,6 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { CATEGORY_LABELS, SCORING } from '../score.js';
 import type { AuditReport, Evidence, Finding, Severity } from '../types.js';
+import { fixPrompt, PROMPT_HEADER } from './prompt.js';
 
 const esc = (s: unknown) =>
   String(s ?? '')
@@ -85,22 +86,6 @@ function evidenceRow(e: Evidence, shots: Map<string, Partial<Record<'desktop' | 
   </li>`;
 }
 
-export function fixPrompt(f: Finding): string {
-  const ev = f.evidence
-    .slice(0, 10)
-    .map((e) => {
-      const bits = [
-        e.route && `route ${e.route}${e.viewport ? ` (${e.viewport})` : ''}${e.alsoOn?.length ? `, also on ${e.alsoOn.join(', ')}` : ''}`,
-        e.file && `${e.file}${e.line ? `:${e.line}` : ''}`,
-        e.selector && `selector \`${e.selector}\``,
-        e.excerpt && `"${e.excerpt}"`,
-        e.detail,
-      ].filter(Boolean);
-      return `- ${bits.join(', ')}`;
-    })
-    .join('\n');
-  return `[${f.ruleId}] ${f.title}${f.verified ? '' : ' (design observation, use judgment)'}\n${f.description}\n${ev ? `Evidence:\n${ev}\n` : ''}Fix: ${f.recommendation}`;
-}
 
 function findingCard(f: Finding, shots: Map<string, Partial<Record<'desktop' | 'mobile', Shot>>>, open: boolean, penalty: number | undefined): string {
   return `<details class="finding" data-cat="${f.category}" data-sev="${f.severity}" id="${esc(f.id)}"${open ? ' open' : ''}>
@@ -237,7 +222,7 @@ h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--mute
 
 const JS = `
 const prompts = JSON.parse(document.getElementById('prompts').textContent);
-const header = 'Fix the following UI issues reported by samey. Make focused changes, keep unrelated code as is, and re-run samey afterwards to verify.\\n\\n';
+const header = JSON.parse(document.getElementById('prompt-header').textContent);
 async function copy(text, btn){
   try { await navigator.clipboard.writeText(text); }
   catch { const t=document.createElement('textarea'); t.value=text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
@@ -390,6 +375,7 @@ ${defs}
   <button id="tray-copy" type="button"><span>Copy fix prompt</span></button>
   <button id="tray-clear" type="button">Clear</button>
 </div>
+<script type="application/json" id="prompt-header">${JSON.stringify(PROMPT_HEADER).replace(/</g, '\\u003c')}</script>
 <script type="application/json" id="prompts">${JSON.stringify(prompts).replace(/</g, '\\u003c')}</script>
 <script>${JS}
 document.querySelectorAll('[data-open]').forEach(a=>a.addEventListener('click',()=>{const d=document.getElementById(a.dataset.open); if(d) d.open=true;}));

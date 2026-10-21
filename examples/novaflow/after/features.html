@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How NovaFlow works: from Slack thread to runbook</title>
+<meta name="description" content="What NovaFlow extracts from a thread, what it leaves out, and how runbooks stay current.">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="site-head"><div class="wrap"><a class="logo" href="/">NovaFlow</a><nav aria-label="Main"><a href="/features" aria-current="page">How it works</a><a href="/about">About</a><a href="/#pricing">Pricing</a></nav></div></header>
+<main class="wrap">
+  <section style="border-top:0">
+    <h1>What NovaFlow keeps, and what it leaves in the thread</h1>
+    <p class="lead">A good runbook is shorter than the conversation that produced it. These are the rules NovaFlow follows when it drafts one.</p>
+  </section>
+  <section>
+    <h2>Kept</h2>
+    <dl>
+      <dt>Commands and links</dt><dd>Shell commands, dashboard links, and file paths, in the order they were used, with the message they came from.</dd>
+      <dt>Decisions</dt><dd>Messages like "use the restricted key, not the full one" become notes on the step they affect.</dd>
+      <dt>Owners</dt><dd>The person who ran each step is suggested as its owner. You confirm or change it before saving.</dd>
+    </dl>
+  </section>
+  <section>
+    <h2>Left out</h2>
+    <dl>
+      <dt>Dead ends</dt><dd>Attempts that were undone later in the thread are shown to you, unticked, so you can decide whether they belong.</dd>
+      <dt>Secrets</dt><dd>Anything that looks like a token or password is replaced with the name of the variable that should hold it.</dd>
+    </dl>
+  </section>
+  <section>
+    <h2>Keeping runbooks current</h2>
+    <p>When someone runs a runbook and does something differently, NovaFlow asks at the end whether the change should become the new version. Old versions stay in the history.</p>
+  </section>
+</main>
+<footer class="site-foot"><div class="wrap"><div><a href="/privacy">Privacy</a><a href="mailto:hello@novaflow.dev">hello@novaflow.dev</a></div><div>NovaFlow Ltd, registered in England and Wales.</div></div></footer>
+</body></html>
