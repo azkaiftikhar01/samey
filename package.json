@@ -1,7 +1,7 @@
 {
-  "name": "unslop",
+  "name": "samey",
   "version": "0.1.0",
-  "description": "Lint your AI-built UI. Local-first website quality audits that find generic, broken, and unfinished patterns.",
+  "description": "Find what makes your AI-built site look like every other one. A local CLI that audits rendered pages for stock patterns, broken behaviour, and accessibility gaps, with evidence and fix prompts.",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsx src/cli.ts",
@@ -12,24 +12,30 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/azkaiftikhar01/unslop.git"
+    "url": "git+https://github.com/azkaiftikhar01/samey.git"
   },
   "keywords": [
-    "lint",
-    "ui",
+    "ai",
+    "claude-code",
+    "cursor",
+    "codex",
+    "vibe-coding",
     "design",
+    "ui",
+    "lint",
     "audit",
     "playwright",
-    "ai",
-    "accessibility"
+    "accessibility",
+    "website",
+    "cli"
   ],
-  "author": "",
+  "author": "Azka Iftikhar",
   "license": "MIT",
   "type": "module",
   "bugs": {
-    "url": "https://github.com/azkaiftikhar01/unslop/issues"
+    "url": "https://github.com/azkaiftikhar01/samey/issues"
   },
-  "homepage": "https://github.com/azkaiftikhar01/unslop#readme",
+  "homepage": "https://github.com/azkaiftikhar01/samey#readme",
   "dependencies": {
     "commander": "^15.0.0",
     "picocolors": "^1.1.1",
@@ -42,7 +48,7 @@
     "vitest": "^5.0.5"
   },
   "bin": {
-    "unslop": "dist/cli.js"
+    "samey": "dist/cli.js"
   },
   "exports": {
     ".": {
@@ -53,9 +59,13 @@
   "files": [
     "dist",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

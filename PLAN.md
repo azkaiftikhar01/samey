@@ -1,6 +1,6 @@
-# unslop plan
+# samey plan
 
-Originally briefed as "SlopLint"; renamed to unslop. This file tracks what exists against the brief, what is next, and the decisions made along the way. Completed work is logged in [CHANGELOG.md](CHANGELOG.md).
+Originally briefed as "SlopLint", first built as "unslop", renamed to **samey** before launch because the npm name `unslop` belongs to a similar tool. This file tracks what exists against the brief, what is next, and the decisions made along the way. Completed work is logged in [CHANGELOG.md](CHANGELOG.md).
 
 ## Status (2026-10-21)
 
@@ -39,12 +39,12 @@ Explicit non-goals for now: hosted dashboard, accounts, browser or editor extens
 
 ## Decisions
 
-- **Name.** unslop (was SlopLint in the brief).
+- **Name.** samey. The brief called it SlopLint; it was built as unslop, then renamed because `unslop` on npm is an existing tool for AI-generated code anti-patterns, which would confuse search and word of mouth. `samey` was free on npm with no notable GitHub projects.
 - **The first brief was truncated** partway through section 4D, so the first slice was built from sections 1 to 4. Once the full brief arrived, the score direction, categories, finding schema, and security model were changed to match it.
 - **Node and npm.** Node 24, npm (no pnpm on the machine), ESM, `tsc` build, `tsx` for development, vitest.
 - **Dependencies kept small:** commander, picocolors, playwright. The browser is the parser for rendered facts; source checks are line-based.
 - **All browser traffic is served from Node.** Playwright's route interception hands every request to a client that resolves DNS, validates every address, and connects to the validated address. The browser never resolves names itself. In remote mode Chromium also gets a dead proxy so preconnects and WebRTC cannot leak.
-- **`--dev` is required for non-public `--url` targets.** A server unslop starts itself gets loopback only. Metadata addresses are never allowed.
+- **`--dev` is required for non-public `--url` targets.** A server samey starts itself gets loopback only. Metadata addresses are never allowed.
 - **Never run project code implicitly.** Dev servers only with `--serve`; `serve` in the config file needs `--serve` on the command line too.
 - **Five categories, as in the brief.** Former categories map as: genericness and consistency to visual; copy and credibility to content; functionality and horizontal overflow to functional; accessibility, touch targets, tiny text to accessibility; page metadata to technical.
 - **Confidence numbers.** About 0.9 for measurements, 0.6 for structural heuristics, 0.35 for judgment calls, 0.3 for model output.
@@ -53,5 +53,5 @@ Explicit non-goals for now: hosted dashboard, accounts, browser or editor extens
 - **Error pages are not content.** A 404 is reported as a broken link and failed route; its markup is not fed to visual rules.
 - **Mobile width from `clientWidth`.** Chrome mobile emulation zooms out to fit overflowing content, inflating `innerWidth`.
 - **Model output is advisory** and never moves the score.
-- **Screenshots are embedded** as base64 JPEG and reused via SVG `<use>`; a 4-page audit report is under 1 MB. Files also stay in `.unslop/shots/`.
+- **Screenshots are embedded** as base64 JPEG and reused via SVG `<use>`; a 4-page audit report is under 1 MB. Files also stay in `.samey/shots/`.
 - **License.** MIT.

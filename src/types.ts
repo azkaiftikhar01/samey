@@ -248,7 +248,7 @@ export interface Coverage {
 export interface AuditReport {
   schemaVersion: 1;
   scanId: string;
-  tool: { name: 'unslop'; version: string };
+  tool: { name: 'samey'; version: string };
   generatedAt: string;
   durationMs: number;
   /** A short hash of the project path or URL origin, safe to share. */

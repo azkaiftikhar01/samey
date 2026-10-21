@@ -7,7 +7,7 @@ import { runAudit } from '../src/audit.js';
 import { DEFAULTS } from '../src/config.js';
 
 const hasBrowser = existsSync(chromium.executablePath());
-const out = mkdtempSync(path.join(os.tmpdir(), 'unslop-e2e-'));
+const out = mkdtempSync(path.join(os.tmpdir(), 'samey-e2e-'));
 afterAll(() => rmSync(out, { recursive: true, force: true }));
 
 const audit = (fixture: string, extra = {}) =>

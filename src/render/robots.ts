@@ -4,7 +4,7 @@ export interface RobotsRules {
   disallow: string[];
 }
 
-export function parseRobots(txt: string, agent = 'unslop'): RobotsRules {
+export function parseRobots(txt: string, agent = 'samey'): RobotsRules {
   const groups: { agents: string[]; allow: string[]; disallow: string[] }[] = [];
   let current: (typeof groups)[number] | null = null;
   let lastWasAgent = false;

@@ -2,7 +2,7 @@ import { lookup as dnsLookup } from 'node:dns/promises';
 import net from 'node:net';
 
 /**
- * Network policy for everything unslop fetches, in the browser or from Node.
+ * Network policy for everything samey fetches, in the browser or from Node.
  *
  * Remote audits may only reach public addresses. Loopback and private ranges need an
  * explicit development mode. Link-local, reserved, and cloud metadata addresses are never

@@ -4,7 +4,7 @@ import type { RepoFacts, SourceFile } from '../types.js';
 
 const IGNORED_DIRS = new Set([
   'node_modules', '.git', '.hg', '.svn', 'dist', 'build', 'out', '.next', '.nuxt', '.svelte-kit', '.astro', '.output',
-  '.vercel', '.netlify', '.turbo', '.cache', '.parcel-cache', 'coverage', '.unslop', 'vendor', '__pycache__', '.venv', 'venv', 'storybook-static',
+  '.vercel', '.netlify', '.turbo', '.cache', '.parcel-cache', 'coverage', '.samey', 'vendor', '__pycache__', '.venv', 'venv', 'storybook-static',
 ]);
 const SOURCE_EXT = new Set(['.html', '.htm', '.jsx', '.tsx', '.js', '.ts', '.mjs', '.vue', '.svelte', '.astro', '.css', '.scss', '.sass', '.less', '.mdx']);
 const MAX_FILES = 3000;

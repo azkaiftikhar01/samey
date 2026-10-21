@@ -237,7 +237,7 @@ h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--mute
 
 const JS = `
 const prompts = JSON.parse(document.getElementById('prompts').textContent);
-const header = 'Fix the following UI issues reported by unslop. Make focused changes, keep unrelated code as is, and re-run unslop afterwards to verify.\\n\\n';
+const header = 'Fix the following UI issues reported by samey. Make focused changes, keep unrelated code as is, and re-run samey afterwards to verify.\\n\\n';
 async function copy(text, btn){
   try { await navigator.clipboard.writeText(text); }
   catch { const t=document.createElement('textarea'); t.value=text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
@@ -324,14 +324,14 @@ export function renderHtml(report: AuditReport, outDir: string): string {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>unslop report${report.repo?.name ? ` · ${esc(report.repo.name)}` : ''}</title>
+<title>samey report${report.repo?.name ? ` · ${esc(report.repo.name)}` : ''}</title>
 <style>${CSS}</style>
 </head>
 <body>
 ${defs}
 <div class="wrap">
   <header class="top">
-    <div class="brand">un<span>slop</span></div>
+    <div class="brand">same<span>y</span></div>
     <div class="target">${esc(target)} · ${esc(new Date(report.generatedAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }))}</div>
   </header>
 
@@ -381,7 +381,7 @@ ${defs}
   <div class="method">
     <p>The score counts detected quality problems; it is not a probability that AI wrote the site. Each finding adds a penalty <code>p = s × c × w</code>: severity <code>s</code> (low 0.25, medium 0.5, high 0.75, critical 1), confidence <code>c</code> (0 to 1), and a per-rule weight <code>w</code> (default ${SCORING.defaultPenalty}). Penalties in a category add up to <code>P</code>, and the category score is <code>100 × (1 − e<sup>−P/${SCORING.saturation}</sup>)</code>, so many small findings cannot push it past 100. The overall score is the weighted average of the measured categories; categories that could not be measured are left out rather than counted as clean.</p>
     <p>Identical evidence on several pages, such as a shared footer, counts once. Verified defects are measured; design observations are heuristics worth a human look. Local model observations are advisory and never change the score. The weights are starting points, not calibrated values.</p>
-    <p class="dim">unslop ${esc(report.tool.version)} · scoring ${esc(report.versions.scoring)} · scan ${esc(report.scanId.slice(0, 8))} · ${(report.durationMs / 1000).toFixed(1)}s</p>
+    <p class="dim">samey ${esc(report.tool.version)} · scoring ${esc(report.versions.scoring)} · scan ${esc(report.scanId.slice(0, 8))} · ${(report.durationMs / 1000).toFixed(1)}s</p>
   </div>
 </div>
 

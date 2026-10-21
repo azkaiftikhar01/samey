@@ -1,0 +1,2309 @@
+{
+  "schemaVersion": 1,
+  "scanId": "eb7012b9-b208-4535-8f74-35bab564766e",
+  "tool": {
+    "name": "unslop",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-10-21T07:54:33.744Z",
+  "durationMs": 140312,
+  "project": {
+    "id": "a46756d53a21",
+    "name": "stewardex.com.au"
+  },
+  "target": {
+    "url": "https://stewardex.com.au/"
+  },
+  "score": 35.8,
+  "categories": [
+    {
+      "category": "visual",
+      "weight": 0.4,
+      "penalty": 69.5,
+      "score": 50.1,
+      "deductions": [
+        {
+          "findingId": "glow-effects-36fc91a6",
+          "ruleId": "glow-effects",
+          "penalty": 18
+        },
+        {
+          "findingId": "cross-page-template-d8a3c88e",
+          "ruleId": "cross-page-template",
+          "penalty": 6
+        },
+        {
+          "findingId": "emoji-icons-69a91b26",
+          "ruleId": "emoji-icons",
+          "penalty": 18
+        },
+        {
+          "findingId": "token-sprawl-2a59fe2c",
+          "ruleId": "token-sprawl",
+          "penalty": 12
+        },
+        {
+          "findingId": "token-sprawl-21e49a1c",
+          "ruleId": "token-sprawl",
+          "penalty": 6
+        },
+        {
+          "findingId": "token-sprawl-78a92cea",
+          "ruleId": "token-sprawl",
+          "penalty": 6
+        },
+        {
+          "findingId": "token-sprawl-70933229",
+          "ruleId": "token-sprawl",
+          "penalty": 3.5
+        }
+      ]
+    },
+    {
+      "category": "content",
+      "weight": 0.2,
+      "penalty": 9,
+      "score": 8.6,
+      "deductions": [
+        {
+          "findingId": "duplicate-copy-839103f2",
+          "ruleId": "duplicate-copy",
+          "penalty": 9
+        }
+      ]
+    },
+    {
+      "category": "functional",
+      "weight": 0.15,
+      "penalty": 69.38,
+      "score": 50,
+      "deductions": [
+        {
+          "findingId": "console-errors-fe7e43b8",
+          "ruleId": "console-errors",
+          "penalty": 30.38
+        },
+        {
+          "findingId": "unresponsive-buttons-ec8220dd",
+          "ruleId": "unresponsive-buttons",
+          "penalty": 12
+        },
+        {
+          "findingId": "unresponsive-buttons-6624308f",
+          "ruleId": "unresponsive-buttons",
+          "penalty": 27
+        }
+      ]
+    },
+    {
+      "category": "accessibility",
+      "weight": 0.15,
+      "penalty": 50.63,
+      "score": 39.7,
+      "deductions": [
+        {
+          "findingId": "unlabeled-inputs-a797f219",
+          "ruleId": "unlabeled-inputs",
+          "penalty": 18
+        },
+        {
+          "findingId": "heading-structure-2490b526",
+          "ruleId": "heading-structure",
+          "penalty": 9
+        },
+        {
+          "findingId": "small-touch-targets-e5608b3a",
+          "ruleId": "small-touch-targets",
+          "penalty": 18
+        },
+        {
+          "findingId": "tiny-text-36c9331d",
+          "ruleId": "tiny-text",
+          "penalty": 5.63
+        }
+      ]
+    },
+    {
+      "category": "technical",
+      "weight": 0.1,
+      "penalty": 5.63,
+      "score": 5.5,
+      "deductions": [
+        {
+          "findingId": "missing-metadata-ff314840",
+          "ruleId": "missing-metadata",
+          "penalty": 5.63
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "console-errors",
+      "ruleVersion": 1,
+      "title": "JavaScript errors in the console",
+      "category": "functional",
+      "severity": "high",
+      "confidence": 0.9,
+      "source": "rendered",
+      "description": "1 console error on 1 page, including 1 uncaught exception.",
+      "recommendation": "Open the browser console on each listed page and fix the errors; uncaught exceptions often mean a feature silently does not work.",
+      "evidence": [
+        {
+          "type": "console",
+          "route": "/marketplace",
+          "excerpt": "Uncaught: Worker was terminated"
+        }
+      ],
+      "routes": [
+        "/marketplace"
+      ],
+      "verified": true,
+      "fingerprint": "fe7e43b8fe984328",
+      "id": "console-errors-fe7e43b8"
+    },
+    {
+      "ruleId": "unresponsive-buttons",
+      "ruleVersion": 1,
+      "title": "Buttons that throw errors",
+      "category": "functional",
+      "severity": "high",
+      "confidence": 0.9,
+      "source": "rendered",
+      "description": "1 button threw a JavaScript error when clicked.",
+      "recommendation": "Fix the click handler; the error message is shown with each item.",
+      "evidence": [
+        {
+          "type": "dom",
+          "route": "/marketplace",
+          "viewport": "desktop",
+          "selector": "main > section > div:nth-of-type(2) > div > button:nth-of-type(2)",
+          "rect": {
+            "x": 241,
+            "y": 307,
+            "width": 284,
+            "height": 38
+          },
+          "excerpt": "Charity Foundations & Administration 4",
+          "detail": "Worker was terminated",
+          "screenshotPath": "shots/04-marketplace-desktop.jpg"
+        }
+      ],
+      "routes": [
+        "/marketplace"
+      ],
+      "verified": false,
+      "fingerprint": "6624308fd83ac09d",
+      "id": "unresponsive-buttons-6624308f"
+    },
+    {
+      "ruleId": "small-touch-targets",
+      "ruleVersion": 1,
+      "title": "Touch targets too small",
+      "category": "accessibility",
+      "severity": "medium",
+      "confidence": 0.9,
+      "source": "rendered",
+      "description": "115 controls are smaller than 24x24px on mobile (WCAG 2.5.8 minimum).",
+      "recommendation": "Increase padding on small controls so the tappable area is at least 24px, ideally 44px.",
+      "evidence": [
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(1) > div:nth-of-type(3) > div > div > button:nth-of-type(1)",
+          "rect": {
+            "x": 147,
+            "y": 1358,
+            "width": 22,
+            "height": 8
+          },
+          "excerpt": "Go to 1",
+          "detail": "22x8px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(1) > div:nth-of-type(3) > div > div > button:nth-of-type(2)",
+          "rect": {
+            "x": 176,
+            "y": 1358,
+            "width": 8,
+            "height": 8
+          },
+          "excerpt": "Go to 2",
+          "detail": "8x8px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(1) > div:nth-of-type(3) > div > div > button:nth-of-type(3)",
+          "rect": {
+            "x": 191,
+            "y": 1358,
+            "width": 8,
+            "height": 8
+          },
+          "excerpt": "Go to 3",
+          "detail": "8x8px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(1) > div:nth-of-type(3) > div > div > button:nth-of-type(4)",
+          "rect": {
+            "x": 205,
+            "y": 1358,
+            "width": 8,
+            "height": 8
+          },
+          "excerpt": "Go to 4",
+          "detail": "8x8px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(1) > div:nth-of-type(3) > div > div > button:nth-of-type(5)",
+          "rect": {
+            "x": 220,
+            "y": 1358,
+            "width": 8,
+            "height": 8
+          },
+          "excerpt": "Go to 5",
+          "detail": "8x8px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(1) > div:nth-of-type(3) > div > div > button:nth-of-type(6)",
+          "rect": {
+            "x": 235,
+            "y": 1358,
+            "width": 8,
+            "height": 8
+          },
+          "excerpt": "Go to 6",
+          "detail": "8x8px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2) > div > button:nth-of-type(1)",
+          "rect": {
+            "x": 154,
+            "y": 2915,
+            "width": 22,
+            "height": 8
+          },
+          "excerpt": "Go to 1",
+          "detail": "22x8px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2) > div > button:nth-of-type(2)",
+          "rect": {
+            "x": 183,
+            "y": 2915,
+            "width": 8,
+            "height": 8
+          },
+          "excerpt": "Go to 2",
+          "detail": "8x8px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2) > div > button:nth-of-type(3)",
+          "rect": {
+            "x": 198,
+            "y": 2915,
+            "width": 8,
+            "height": 8
+          },
+          "excerpt": "Go to 3",
+          "detail": "8x8px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2) > div > button:nth-of-type(4)",
+          "rect": {
+            "x": 213,
+            "y": 2915,
+            "width": 8,
+            "height": 8
+          },
+          "excerpt": "Go to 4",
+          "detail": "8x8px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2) > div > button:nth-of-type(5)",
+          "rect": {
+            "x": 228,
+            "y": 2915,
+            "width": 8,
+            "height": 8
+          },
+          "excerpt": "Go to 5",
+          "detail": "8x8px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(2) > ul > li:nth-of-type(1) > a",
+          "rect": {
+            "x": 20,
+            "y": 5451,
+            "width": 53,
+            "height": 16
+          },
+          "excerpt": "Features",
+          "detail": "53x16px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(2) > ul > li:nth-of-type(2) > a",
+          "rect": {
+            "x": 20,
+            "y": 5480,
+            "width": 102,
+            "height": 16
+          },
+          "excerpt": "ACNC Alignment",
+          "detail": "102x16px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(2) > ul > li:nth-of-type(3) > a",
+          "rect": {
+            "x": 20,
+            "y": 5509,
+            "width": 65,
+            "height": 16
+          },
+          "excerpt": "Workflows",
+          "detail": "65x16px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(2) > ul > li:nth-of-type(4) > a",
+          "rect": {
+            "x": 20,
+            "y": 5538,
+            "width": 42,
+            "height": 16
+          },
+          "excerpt": "Pricing",
+          "detail": "42x16px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(2) > ul > li:nth-of-type(5) > a",
+          "rect": {
+            "x": 20,
+            "y": 5567,
+            "width": 83,
+            "height": 16
+          },
+          "excerpt": "Bespoke Plan",
+          "detail": "83x16px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(2) > ul > li:nth-of-type(6) > a",
+          "rect": {
+            "x": 20,
+            "y": 5596,
+            "width": 94,
+            "height": 16
+          },
+          "excerpt": "Live dashboard",
+          "detail": "94x16px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(3) > ul > li:nth-of-type(1) > a",
+          "rect": {
+            "x": 20,
+            "y": 5683,
+            "width": 38,
+            "height": 16
+          },
+          "excerpt": "About",
+          "detail": "38x16px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(3) > ul > li:nth-of-type(2) > a",
+          "rect": {
+            "x": 20,
+            "y": 5712,
+            "width": 116,
+            "height": 16
+          },
+          "excerpt": "Policy Marketplace",
+          "detail": "116x16px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(3) > ul > li:nth-of-type(3) > a",
+          "rect": {
+            "x": 20,
+            "y": 5741,
+            "width": 33,
+            "height": 16
+          },
+          "excerpt": "FAQs",
+          "detail": "33x16px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(3) > ul > li:nth-of-type(4) > a",
+          "rect": {
+            "x": 20,
+            "y": 5770,
+            "width": 51,
+            "height": 16
+          },
+          "excerpt": "Contact",
+          "detail": "51x16px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(3) > ul > li:nth-of-type(5) > a",
+          "rect": {
+            "x": 20,
+            "y": 5799,
+            "width": 83,
+            "height": 16
+          },
+          "excerpt": "Privacy Policy",
+          "detail": "83x16px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(3) > ul > li:nth-of-type(6) > a",
+          "rect": {
+            "x": 20,
+            "y": 5828,
+            "width": 106,
+            "height": 16
+          },
+          "excerpt": "Account Deletion",
+          "detail": "106x16px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/features",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(1) > div:nth-of-type(2) > ul > li:nth-of-type(1) > a",
+          "rect": {
+            "x": 17,
+            "y": 6102,
+            "width": 53,
+            "height": 16
+          },
+          "excerpt": "Features",
+          "detail": "53x16px",
+          "screenshotPath": "shots/02-features-mobile.jpg",
+          "alsoOn": [
+            "/acnc-alignment",
+            "/marketplace",
+            "/about",
+            "/pricing",
+            "/faqs",
+            "/contact-sales",
+            "/privacy",
+            "/account-deletion"
+          ]
+        }
+      ],
+      "routes": [
+        "/",
+        "/features",
+        "/acnc-alignment",
+        "/marketplace",
+        "/about",
+        "/pricing",
+        "/faqs",
+        "/contact-sales",
+        "/privacy",
+        "/account-deletion"
+      ],
+      "verified": true,
+      "fingerprint": "e5608b3a68bd74ae",
+      "id": "small-touch-targets-e5608b3a"
+    },
+    {
+      "ruleId": "unlabeled-inputs",
+      "ruleVersion": 1,
+      "title": "Form fields without labels",
+      "category": "accessibility",
+      "severity": "medium",
+      "confidence": 0.9,
+      "source": "rendered",
+      "description": "3 form fields have no label. Placeholder text disappears on input and is not announced reliably.",
+      "recommendation": "Add a visible <label for=...> to each field, or aria-label where a visible label truly does not fit.",
+      "evidence": [
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "#contact > div:nth-of-type(3) > div:nth-of-type(1) > form > input",
+          "rect": {
+            "x": 836,
+            "y": 13803,
+            "width": 367,
+            "height": 34
+          },
+          "excerpt": "<email>",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/marketplace",
+          "viewport": "desktop",
+          "selector": "main > section > div:nth-of-type(3) > div:nth-of-type(1) > input",
+          "rect": {
+            "x": 104,
+            "y": 373,
+            "width": 206,
+            "height": 45
+          },
+          "excerpt": "<search>",
+          "screenshotPath": "shots/04-marketplace-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/faqs",
+          "viewport": "desktop",
+          "selector": "div:nth-of-type(2) > div > div:nth-of-type(2) > div > input",
+          "rect": {
+            "x": 476,
+            "y": 483,
+            "width": 488,
+            "height": 50
+          },
+          "excerpt": "<search>",
+          "screenshotPath": "shots/07-faqs-desktop.jpg"
+        }
+      ],
+      "routes": [
+        "/",
+        "/marketplace",
+        "/faqs"
+      ],
+      "verified": true,
+      "fingerprint": "a797f219a5dd1690",
+      "id": "unlabeled-inputs-a797f219"
+    },
+    {
+      "ruleId": "glow-effects",
+      "ruleVersion": 1,
+      "title": "Decorative glows, blur blobs, and glass panels",
+      "category": "visual",
+      "severity": "medium",
+      "confidence": 0.9,
+      "source": "rendered",
+      "description": "Found 105 colored glow shadows, 59 blurred background blobs, 27 glass panels. Layered glows and glass are decoration the content does not ask for, and they flatten hierarchy because everything shines equally.",
+      "recommendation": "Remove decorative blobs and glow shadows. Use elevation sparingly and with neutral shadows; keep at most one deliberate accent effect per page.",
+      "evidence": [
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "#root > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(2)",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 1440,
+            "height": 1440
+          },
+          "excerpt": "filter: blur(40px); background: radial-gradient(60% 50% at 12% 18%, rgba(13, 71, 161, 0.133) 0%, rgba(0, 0, 0, 0) 60%), radial-gradient(55%…",
+          "detail": "blurred decorative blob",
+          "screenshotPath": "shots/01-home-desktop.jpg",
+          "alsoOn": [
+            "/features",
+            "/acnc-alignment",
+            "/marketplace",
+            "/about",
+            "/pricing",
+            "/faqs",
+            "/contact-sales",
+            "/privacy",
+            "/account-deletion"
+          ]
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "#root > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(3)",
+          "rect": {
+            "x": 20,
+            "y": -2873,
+            "width": 1400,
+            "height": 1400
+          },
+          "excerpt": "filter: blur(80px); background: conic-gradient(from 90deg, rgba(0, 0, 0, 0) 0deg, rgba(13, 148, 136, 0.08) 60deg, rgba(0, 0, 0, 0) 120deg, …",
+          "detail": "blurred decorative blob",
+          "screenshotPath": "shots/01-home-desktop.jpg",
+          "alsoOn": [
+            "/features",
+            "/acnc-alignment",
+            "/marketplace",
+            "/about",
+            "/pricing",
+            "/faqs",
+            "/contact-sales",
+            "/privacy",
+            "/account-deletion"
+          ]
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "#root > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(4)",
+          "rect": {
+            "x": -144,
+            "y": -1724,
+            "width": 620,
+            "height": 620
+          },
+          "excerpt": "filter: blur(60px); background: radial-gradient(circle, rgba(13, 71, 161, 0.19) 0%, rgba(13, 148, 136, 0.07) 40%, rgba(0, 0, 0, 0) 70%)",
+          "detail": "blurred decorative blob",
+          "screenshotPath": "shots/01-home-desktop.jpg",
+          "alsoOn": [
+            "/features",
+            "/acnc-alignment",
+            "/marketplace",
+            "/about",
+            "/pricing",
+            "/faqs",
+            "/contact-sales",
+            "/privacy",
+            "/account-deletion"
+          ]
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "#root > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(5)",
+          "rect": {
+            "x": 973,
+            "y": 4310,
+            "width": 640,
+            "height": 640
+          },
+          "excerpt": "filter: blur(70px); background: radial-gradient(circle, rgba(13, 148, 136, 0.15) 0%, rgba(13, 71, 161, 0.07) 50%, rgba(0, 0, 0, 0) 75%)",
+          "detail": "blurred decorative blob",
+          "screenshotPath": "shots/01-home-desktop.jpg",
+          "alsoOn": [
+            "/features",
+            "/acnc-alignment",
+            "/marketplace",
+            "/about",
+            "/pricing",
+            "/faqs",
+            "/contact-sales",
+            "/privacy",
+            "/account-deletion"
+          ]
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "#root > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(6)",
+          "rect": {
+            "x": 432,
+            "y": 15961,
+            "width": 560,
+            "height": 560
+          },
+          "excerpt": "filter: blur(60px); background: radial-gradient(circle, rgba(21, 101, 192, 0.157) 0%, rgba(13, 148, 136, 0.08) 50%, rgba(0, 0, 0, 0) 75%)",
+          "detail": "blurred decorative blob",
+          "screenshotPath": "shots/01-home-desktop.jpg",
+          "alsoOn": [
+            "/features",
+            "/acnc-alignment",
+            "/marketplace",
+            "/about",
+            "/pricing",
+            "/faqs",
+            "/contact-sales",
+            "/privacy",
+            "/account-deletion"
+          ]
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "header > div > div > div > a",
+          "rect": {
+            "x": 1225,
+            "y": 20,
+            "width": 124,
+            "height": 37
+          },
+          "excerpt": "rgba(13, 148, 136, 0.55) 0px 12px 28px -10px, rgba(255, 255, 255, 0.3) 0px 1px 0px 0px inset",
+          "detail": "colored glow shadow",
+          "screenshotPath": "shots/01-home-desktop.jpg",
+          "alsoOn": [
+            "/features",
+            "/acnc-alignment",
+            "/marketplace",
+            "/about",
+            "/pricing",
+            "/faqs",
+            "/contact-sales",
+            "/privacy",
+            "/account-deletion"
+          ]
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "div:nth-of-type(1) > div > div > div > a",
+          "rect": {
+            "x": 564,
+            "y": 290,
+            "width": 152,
+            "height": 41
+          },
+          "excerpt": "rgba(13, 148, 136, 0.55) 0px 22px 44px -16px, rgba(255, 255, 255, 0.28) 0px 1px 0px 0px inset",
+          "detail": "colored glow shadow",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "#dashboard > div > div:nth-of-type(1) > div > button",
+          "rect": {
+            "x": 726,
+            "y": 289,
+            "width": 150,
+            "height": 43
+          },
+          "excerpt": "backdrop-filter: blur(8px)",
+          "detail": "glass panel",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "#dashboard > div > div:nth-of-type(2) > div:nth-of-type(1)",
+          "rect": {
+            "x": 223,
+            "y": 368,
+            "width": 994,
+            "height": 540
+          },
+          "excerpt": "filter: blur(60px); background: radial-gradient(60% 55% at 50% 40%, rgba(13, 148, 136, 0.227) 0%, rgba(13, 71, 161, 0.15) 40%, rgba(0, 0, 0…",
+          "detail": "blurred decorative blob",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "#dashboard > div > div:nth-of-type(2) > div:nth-of-type(2)",
+          "rect": {
+            "x": 331,
+            "y": 340,
+            "width": 778,
+            "height": 380
+          },
+          "excerpt": "filter: blur(70px); background: conic-gradient(from 180deg, rgba(13, 148, 136, 0.22), rgba(13, 71, 161, 0.19), rgba(8, 145, 178, 0.19), rgb…",
+          "detail": "blurred decorative blob",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "#dashboard > div > div:nth-of-type(2) > div:nth-of-type(3) > div:nth-of-type(2)",
+          "rect": {
+            "x": 214,
+            "y": 340,
+            "width": 1012,
+            "height": 715
+          },
+          "excerpt": "rgba(13, 71, 161, 0.4) 0px 60px 120px -40px, rgba(13, 148, 136, 0.18) 0px 24px 48px -20px, rgba(255, 255, 255, 0.6) 0px 1px 0px 0px inset",
+          "detail": "colored glow shadow",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > div",
+          "rect": {
+            "x": 489,
+            "y": 716,
+            "width": 156,
+            "height": 156
+          },
+          "excerpt": "rgba(13, 148, 136, 0.333) 0px 12px 30px -10px",
+          "detail": "colored glow shadow",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2)",
+          "rect": {
+            "x": 496,
+            "y": 633,
+            "width": 143,
+            "height": 42
+          },
+          "excerpt": "rgba(13, 71, 161, 0.18) 0px 8px 24px -10px",
+          "detail": "colored glow shadow",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(3)",
+          "rect": {
+            "x": 314,
+            "y": 773,
+            "width": 157,
+            "height": 42
+          },
+          "excerpt": "rgba(13, 71, 161, 0.18) 0px 8px 24px -10px",
+          "detail": "colored glow shadow",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4)",
+          "rect": {
+            "x": 672,
+            "y": 773,
+            "width": 140,
+            "height": 42
+          },
+          "excerpt": "rgba(13, 71, 161, 0.18) 0px 8px 24px -10px",
+          "detail": "colored glow shadow",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(5)",
+          "rect": {
+            "x": 384,
+            "y": 921,
+            "width": 140,
+            "height": 42
+          },
+          "excerpt": "rgba(13, 71, 161, 0.18) 0px 8px 24px -10px",
+          "detail": "colored glow shadow",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(6)",
+          "rect": {
+            "x": 641,
+            "y": 898,
+            "width": 140,
+            "height": 54
+          },
+          "excerpt": "rgba(13, 71, 161, 0.18) 0px 8px 24px -10px",
+          "detail": "colored glow shadow",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "#workflow > div > div:nth-of-type(2) > div:nth-of-type(2) > div",
+          "rect": {
+            "x": 874,
+            "y": 7673,
+            "width": 440,
+            "height": 557
+          },
+          "excerpt": "rgba(13, 71, 161, 0.3) 0px 50px 100px -40px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1px inset",
+          "detail": "colored glow shadow",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "div:nth-of-type(2) > div > div:nth-of-type(3) > div:nth-of-type(3) > div",
+          "rect": {
+            "x": 919,
+            "y": 7749,
+            "width": 374,
+            "height": 65
+          },
+          "excerpt": "rgba(13, 148, 136, 0.4) 0px 18px 36px -18px",
+          "detail": "colored glow shadow",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "div:nth-of-type(2) > section:nth-of-type(4) > div > div:nth-of-type(2) > div:nth-of-type(1)",
+          "rect": {
+            "x": 211,
+            "y": 12237,
+            "width": 1018,
+            "height": 75
+          },
+          "excerpt": "rgba(13, 71, 161, 0.18) 0px 20px 50px -32px",
+          "detail": "colored glow shadow",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "div:nth-of-type(2) > section:nth-of-type(4) > div > div:nth-of-type(2) > div:nth-of-type(2)",
+          "rect": {
+            "x": 211,
+            "y": 12322,
+            "width": 1018,
+            "height": 75
+          },
+          "excerpt": "rgba(13, 71, 161, 0.18) 0px 20px 50px -32px",
+          "detail": "colored glow shadow",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "div:nth-of-type(2) > section:nth-of-type(4) > div > div:nth-of-type(2) > div:nth-of-type(3)",
+          "rect": {
+            "x": 211,
+            "y": 12407,
+            "width": 1018,
+            "height": 75
+          },
+          "excerpt": "rgba(13, 71, 161, 0.18) 0px 20px 50px -32px",
+          "detail": "colored glow shadow",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "div:nth-of-type(2) > section:nth-of-type(4) > div > div:nth-of-type(2) > div:nth-of-type(4)",
+          "rect": {
+            "x": 211,
+            "y": 12492,
+            "width": 1018,
+            "height": 75
+          },
+          "excerpt": "rgba(13, 71, 161, 0.18) 0px 20px 50px -32px",
+          "detail": "colored glow shadow",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "div:nth-of-type(2) > section:nth-of-type(4) > div > div:nth-of-type(2) > div:nth-of-type(5)",
+          "rect": {
+            "x": 211,
+            "y": 12577,
+            "width": 1018,
+            "height": 75
+          },
+          "excerpt": "rgba(13, 71, 161, 0.18) 0px 20px 50px -32px",
+          "detail": "colored glow shadow",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        }
+      ],
+      "routes": [
+        "/",
+        "/features",
+        "/acnc-alignment",
+        "/marketplace",
+        "/about",
+        "/pricing",
+        "/faqs",
+        "/contact-sales",
+        "/privacy",
+        "/account-deletion"
+      ],
+      "verified": false,
+      "fingerprint": "36fc91a611aa4fd6",
+      "id": "glow-effects-36fc91a6"
+    },
+    {
+      "ruleId": "emoji-icons",
+      "ruleVersion": 1,
+      "title": "Emoji used as icons",
+      "category": "visual",
+      "severity": "medium",
+      "confidence": 0.9,
+      "source": "rendered",
+      "description": "10 heading, button, or labels use emoji as decoration or icons. Emoji render differently on every platform, cannot be styled to the brand, and are a strong signal of generated UI.",
+      "recommendation": "Replace emoji with a consistent SVG icon set (one stroke width, one size scale) or drop the icon entirely where the label is clear.",
+      "evidence": [
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "#contact > div:nth-of-type(3) > div:nth-of-type(4) > div",
+          "rect": {
+            "x": 91,
+            "y": 14314,
+            "width": 1258,
+            "height": 18
+          },
+          "excerpt": "© 2026 Stewardex Pty Ltd · Built for mission-driven organisations",
+          "detail": "emoji ©",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/features",
+          "viewport": "desktop",
+          "selector": "div:nth-of-type(2) > footer > div > div:nth-of-type(2) > div:nth-of-type(2)",
+          "rect": {
+            "x": 1029,
+            "y": 11887,
+            "width": 361,
+            "height": 18
+          },
+          "excerpt": "© 2026 Stewardex Pty Ltd · Built for mission-driven organisations",
+          "detail": "emoji ©",
+          "screenshotPath": "shots/02-features-desktop.jpg",
+          "alsoOn": [
+            "/acnc-alignment",
+            "/marketplace",
+            "/about",
+            "/pricing",
+            "/faqs",
+            "/contact-sales",
+            "/privacy",
+            "/account-deletion"
+          ]
+        }
+      ],
+      "routes": [
+        "/",
+        "/features",
+        "/acnc-alignment",
+        "/marketplace",
+        "/about",
+        "/pricing",
+        "/faqs",
+        "/contact-sales",
+        "/privacy",
+        "/account-deletion"
+      ],
+      "verified": false,
+      "fingerprint": "69a91b264995e036",
+      "id": "emoji-icons-69a91b26"
+    },
+    {
+      "ruleId": "token-sprawl",
+      "ruleVersion": 1,
+      "title": "37 different font sizes",
+      "category": "visual",
+      "severity": "medium",
+      "confidence": 0.6,
+      "source": "rendered",
+      "description": "Text uses 37 distinct font sizes (9px, 9.5px, 10px, 10.5px, 11px, 11.5px, 12px, 12.5px, 13px, 13.5px, 14px, 14.5px, 15px, 15.5px, 16px, 16.5px, 17px, 17.5px, 18px, 20px, 22px, 24px, 26px, 28px, 30px, 34px, 36px, 38px, 40px, 44px, 48px, 52px, 56px, 64px, 68px, 70px, 72px). A type scale usually needs 6 to 8 steps; more than that blurs hierarchy.",
+      "recommendation": "Define a type scale as tokens and map every text style to it. Collapse sizes within 1 to 2px of each other.",
+      "evidence": [
+        {
+          "type": "metric",
+          "detail": "13px used by 241 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "11px used by 153 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "13.5px used by 139 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "14px used by 123 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "14.5px used by 101 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "12.5px used by 91 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "10.5px used by 79 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "11.5px used by 70 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "12px used by 57 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "9.5px used by 50 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "18px used by 36 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "10px used by 32 elements"
+        }
+      ],
+      "verified": false,
+      "fingerprint": "2a59fe2cdbe3f1b8",
+      "id": "token-sprawl-2a59fe2c"
+    },
+    {
+      "ruleId": "unresponsive-buttons",
+      "ruleVersion": 1,
+      "title": "Buttons that do nothing",
+      "category": "functional",
+      "severity": "medium",
+      "confidence": 0.6,
+      "source": "rendered",
+      "description": "2 buttons produced no visible change when clicked (no navigation, no DOM update). Hover-only or CSS-only effects can cause false positives, so confirm by hand.",
+      "recommendation": "Wire the button to its action, or remove it. If it is a placeholder for a future feature, hide it until the feature exists.",
+      "evidence": [
+        {
+          "type": "dom",
+          "route": "/marketplace",
+          "viewport": "desktop",
+          "selector": "main > section > div:nth-of-type(2) > div > button:nth-of-type(1)",
+          "rect": {
+            "x": 106,
+            "y": 307,
+            "width": 127,
+            "height": 38
+          },
+          "excerpt": "All Groups 111",
+          "screenshotPath": "shots/04-marketplace-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/faqs",
+          "viewport": "desktop",
+          "selector": "main > section:nth-of-type(2) > div > div > button:nth-of-type(1)",
+          "rect": {
+            "x": 300,
+            "y": 618,
+            "width": 65,
+            "height": 35
+          },
+          "excerpt": "All",
+          "screenshotPath": "shots/07-faqs-desktop.jpg"
+        }
+      ],
+      "routes": [
+        "/marketplace",
+        "/faqs"
+      ],
+      "verified": false,
+      "fingerprint": "ec8220dd92dd3251",
+      "id": "unresponsive-buttons-ec8220dd"
+    },
+    {
+      "ruleId": "duplicate-copy",
+      "ruleVersion": 1,
+      "title": "Repeated paragraphs",
+      "category": "content",
+      "severity": "low",
+      "confidence": 0.9,
+      "source": "rendered",
+      "description": "1 paragraph appear more than once across the site. Repeated copy suggests sections were duplicated rather than written.",
+      "recommendation": "Write copy specific to each place it appears, or remove the duplicate.",
+      "evidence": [
+        {
+          "type": "dom",
+          "route": "/contact-sales",
+          "viewport": "desktop",
+          "selector": "footer > div > div:nth-of-type(1) > div:nth-of-type(1) > p",
+          "rect": {
+            "x": 50,
+            "y": 1328,
+            "width": 340,
+            "height": 66
+          },
+          "excerpt": "The operating spine for Charities and Not For Profits, foundations and any mission-driven organisat…",
+          "screenshotPath": "shots/08-contact-sales-desktop.jpg",
+          "alsoOn": [
+            "/account-deletion"
+          ]
+        }
+      ],
+      "routes": [
+        "/contact-sales",
+        "/account-deletion"
+      ],
+      "verified": true,
+      "fingerprint": "839103f2c7b070fd",
+      "id": "duplicate-copy-839103f2"
+    },
+    {
+      "ruleId": "tiny-text",
+      "ruleVersion": 1,
+      "title": "Text too small to read on mobile",
+      "category": "accessibility",
+      "severity": "low",
+      "confidence": 0.9,
+      "source": "rendered",
+      "description": "130 text elements are smaller than 12px on mobile.",
+      "recommendation": "Keep body text at 16px and secondary text at 13 to 14px or larger on small screens.",
+      "evidence": [
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div > div:nth-of-type(2) > div > div:nth-of-type(1) > span:nth-of-type(4)",
+          "rect": {
+            "x": 87,
+            "y": 362,
+            "width": 100,
+            "height": 17
+          },
+          "excerpt": "stewardex.com.au",
+          "detail": "11px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div > div:nth-of-type(2) > div > div:nth-of-type(2) > div:nth-of-type(1)",
+          "rect": {
+            "x": 43,
+            "y": 401,
+            "width": 304,
+            "height": 15
+          },
+          "excerpt": "Thursday, April 30, 2026",
+          "detail": "10px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div > div:nth-of-type(2) > div:nth-of-type(3) > span:nth-of-type(1)",
+          "rect": {
+            "x": 47,
+            "y": 454,
+            "width": 89,
+            "height": 23
+          },
+          "excerpt": "Quick Access",
+          "detail": "10.5px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div > div:nth-of-type(2) > div:nth-of-type(3) > span:nth-of-type(2)",
+          "rect": {
+            "x": 139,
+            "y": 454,
+            "width": 42,
+            "height": 23
+          },
+          "excerpt": "KPIs",
+          "detail": "10.5px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(2)",
+          "rect": {
+            "x": 301,
+            "y": 503,
+            "width": 34,
+            "height": 14
+          },
+          "excerpt": "5 pillars",
+          "detail": "9.5px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(4) > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1)",
+          "rect": {
+            "x": 91,
+            "y": 532,
+            "width": 69,
+            "height": 13
+          },
+          "excerpt": "Foundation",
+          "detail": "10.5px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(4) > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(2)",
+          "rect": {
+            "x": 91,
+            "y": 545,
+            "width": 69,
+            "height": 11
+          },
+          "excerpt": "Set-up your regs",
+          "detail": "8.5px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(4) > div:nth-of-type(2) > div:nth-of-type(2) > div > div:nth-of-type(1)",
+          "rect": {
+            "x": 91,
+            "y": 573,
+            "width": 80,
+            "height": 13
+          },
+          "excerpt": "Oversight",
+          "detail": "10.5px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(4) > div:nth-of-type(2) > div:nth-of-type(2) > div > div:nth-of-type(2)",
+          "rect": {
+            "x": 91,
+            "y": 586,
+            "width": 80,
+            "height": 11
+          },
+          "excerpt": "Reporting & comms",
+          "detail": "8.5px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(4) > div:nth-of-type(2) > div:nth-of-type(3) > div > div:nth-of-type(1)",
+          "rect": {
+            "x": 91,
+            "y": 614,
+            "width": 58,
+            "height": 13
+          },
+          "excerpt": "Operations",
+          "detail": "10.5px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(4) > div:nth-of-type(2) > div:nth-of-type(3) > div > div:nth-of-type(2)",
+          "rect": {
+            "x": 91,
+            "y": 627,
+            "width": 58,
+            "height": 11
+          },
+          "excerpt": "Day-to-day",
+          "detail": "8.5px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(4) > div:nth-of-type(2) > div:nth-of-type(4) > div > div:nth-of-type(1)",
+          "rect": {
+            "x": 91,
+            "y": 655,
+            "width": 66,
+            "height": 13
+          },
+          "excerpt": "Funding",
+          "detail": "10.5px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(4) > div:nth-of-type(2) > div:nth-of-type(4) > div > div:nth-of-type(2)",
+          "rect": {
+            "x": 91,
+            "y": 668,
+            "width": 66,
+            "height": 11
+          },
+          "excerpt": "Grants, projects",
+          "detail": "8.5px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(4) > div:nth-of-type(2) > div:nth-of-type(5) > div > div:nth-of-type(1)",
+          "rect": {
+            "x": 91,
+            "y": 696,
+            "width": 86,
+            "height": 13
+          },
+          "excerpt": "Risk",
+          "detail": "10.5px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(4) > div:nth-of-type(2) > div:nth-of-type(5) > div > div:nth-of-type(2)",
+          "rect": {
+            "x": 91,
+            "y": 709,
+            "width": 86,
+            "height": 11
+          },
+          "excerpt": "What could go wrong",
+          "detail": "8.5px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > span",
+          "rect": {
+            "x": 32,
+            "y": 906,
+            "width": 258,
+            "height": 17
+          },
+          "excerpt": "Capabilities · swipe or tap arrows",
+          "detail": "11.5px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(2) > span",
+          "rect": {
+            "x": 20,
+            "y": 954,
+            "width": 349,
+            "height": 17
+          },
+          "excerpt": "01 · Decisioning",
+          "detail": "11.5px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2) > div > span:nth-of-type(1)",
+          "rect": {
+            "x": 136,
+            "y": 1611,
+            "width": 117,
+            "height": 16
+          },
+          "excerpt": "01 · Decisioning",
+          "detail": "10.5px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > span",
+          "rect": {
+            "x": 32,
+            "y": 1817,
+            "width": 248,
+            "height": 17
+          },
+          "excerpt": "Workflow · swipe or tap arrows",
+          "detail": "11.5px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "mobile",
+          "selector": "div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(2) > span",
+          "rect": {
+            "x": 20,
+            "y": 1904,
+            "width": 349,
+            "height": 17
+          },
+          "excerpt": "Step 01 · Submission",
+          "detail": "11.5px",
+          "screenshotPath": "shots/01-home-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/features",
+          "viewport": "mobile",
+          "selector": "div:nth-of-type(2) > main > section:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1)",
+          "rect": {
+            "x": 108,
+            "y": 126,
+            "width": 175,
+            "height": 29
+          },
+          "excerpt": "What's in the box",
+          "detail": "11.5px",
+          "screenshotPath": "shots/02-features-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/features",
+          "viewport": "mobile",
+          "selector": "main > section:nth-of-type(2) > div > div:nth-of-type(1) > div:nth-of-type(3)",
+          "rect": {
+            "x": 35,
+            "y": 720,
+            "width": 137,
+            "height": 17
+          },
+          "excerpt": "Governance → Continuity",
+          "detail": "11px",
+          "screenshotPath": "shots/02-features-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/features",
+          "viewport": "mobile",
+          "selector": "main > section:nth-of-type(2) > div > div:nth-of-type(2) > div:nth-of-type(3)",
+          "rect": {
+            "x": 218,
+            "y": 720,
+            "width": 137,
+            "height": 17
+          },
+          "excerpt": "Out of the box",
+          "detail": "11px",
+          "screenshotPath": "shots/02-features-mobile.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/features",
+          "viewport": "mobile",
+          "selector": "main > section:nth-of-type(2) > div > div:nth-of-type(3) > div:nth-of-type(3)",
+          "rect": {
+            "x": 35,
+            "y": 848,
+            "width": 137,
+            "height": 33
+          },
+          "excerpt": "Sequential / parallel / any-of",
+          "detail": "11px",
+          "screenshotPath": "shots/02-features-mobile.jpg"
+        }
+      ],
+      "routes": [
+        "/",
+        "/features",
+        "/acnc-alignment",
+        "/marketplace",
+        "/about",
+        "/pricing",
+        "/faqs",
+        "/contact-sales",
+        "/privacy",
+        "/account-deletion"
+      ],
+      "verified": true,
+      "fingerprint": "36c9331d7496c063",
+      "id": "tiny-text-36c9331d"
+    },
+    {
+      "ruleId": "heading-structure",
+      "ruleVersion": 1,
+      "title": "Heading structure problems",
+      "category": "accessibility",
+      "severity": "low",
+      "confidence": 0.9,
+      "source": "rendered",
+      "description": "5 pages have heading structure problems. Headings are how assistive technology users skim a page.",
+      "recommendation": "Use exactly one h1 per page and do not skip levels; style headings with CSS instead of picking tags for their size.",
+      "evidence": [
+        {
+          "type": "dom",
+          "route": "/",
+          "viewport": "desktop",
+          "selector": "div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(2) > h3",
+          "rect": {
+            "x": 91,
+            "y": 2464,
+            "width": 751,
+            "height": 85
+          },
+          "excerpt": "Risks, Residuals, Continuity, IT Access — Under One Roof.",
+          "detail": "h1 followed by h3",
+          "screenshotPath": "shots/01-home-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/features",
+          "viewport": "desktop",
+          "selector": "div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(2) > h3",
+          "rect": {
+            "x": 91,
+            "y": 1300,
+            "width": 641,
+            "height": 48
+          },
+          "excerpt": "Audit Trail",
+          "detail": "h1 followed by h3",
+          "screenshotPath": "shots/02-features-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/marketplace",
+          "viewport": "desktop",
+          "selector": "section > div:nth-of-type(4) > div:nth-of-type(1) > div > h3",
+          "rect": {
+            "x": 121,
+            "y": 849,
+            "width": 258,
+            "height": 42
+          },
+          "excerpt": "AML CTF And Anti-Financial Fraud Policy",
+          "detail": "h1 followed by h3",
+          "screenshotPath": "shots/04-marketplace-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/about",
+          "viewport": "desktop",
+          "selector": "div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(2) > h4",
+          "rect": {
+            "x": 133,
+            "y": 1933,
+            "width": 554,
+            "height": 26
+          },
+          "excerpt": "Audit-Grade By Default",
+          "detail": "h2 followed by h4",
+          "screenshotPath": "shots/05-about-desktop.jpg"
+        },
+        {
+          "type": "dom",
+          "route": "/pricing",
+          "viewport": "desktop",
+          "selector": "div > div > div > div:nth-of-type(1) > h3",
+          "rect": {
+            "x": 108,
+            "y": 2061,
+            "width": 1224,
+            "height": 29
+          },
+          "excerpt": "Not A Single Sign-Off — A Living Pipeline",
+          "detail": "h1 followed by h3",
+          "screenshotPath": "shots/06-pricing-desktop.jpg"
+        }
+      ],
+      "routes": [
+        "/",
+        "/features",
+        "/marketplace",
+        "/about",
+        "/pricing"
+      ],
+      "verified": true,
+      "fingerprint": "2490b526d1c30415",
+      "id": "heading-structure-2490b526"
+    },
+    {
+      "ruleId": "missing-metadata",
+      "ruleVersion": 1,
+      "title": "Missing page metadata",
+      "category": "technical",
+      "severity": "low",
+      "confidence": 0.9,
+      "source": "rendered",
+      "description": "1 metadata gap across 1 page.",
+      "recommendation": "Give each page a unique title and description, and set <html lang>.",
+      "evidence": [
+        {
+          "type": "metric",
+          "route": "/",
+          "detail": "10 pages share the title \"Stewardex - Charities & Not for Profits Compliance\""
+        }
+      ],
+      "routes": [
+        "/"
+      ],
+      "verified": true,
+      "fingerprint": "ff314840ba7155c8",
+      "id": "missing-metadata-ff314840"
+    },
+    {
+      "ruleId": "token-sprawl",
+      "ruleVersion": 1,
+      "title": "17 different corner radii",
+      "category": "visual",
+      "severity": "low",
+      "confidence": 0.6,
+      "source": "rendered",
+      "description": "Elements use 17 distinct border radii (3.4px, 5.1px, 6.8px, 8px, 10px, 10.2px, 13.6px, 14px, 16px, 20.4px, 22px, 24px, 28px, 36px, 40px, 50%, 999px).",
+      "recommendation": "Use two or three radius tokens (for example small controls, cards, and full pills) and apply them by component type.",
+      "evidence": [
+        {
+          "type": "metric",
+          "detail": "9999px on 490 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "10.2px on 58 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "6.8px on 53 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "13.6px on 52 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "999px on 49 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "20.4px on 48 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "5.1px on 33 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "10px on 29 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "50% on 25 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "14px on 22 elements"
+        }
+      ],
+      "verified": false,
+      "fingerprint": "21e49a1cae11a004",
+      "id": "token-sprawl-21e49a1c"
+    },
+    {
+      "ruleId": "token-sprawl",
+      "ruleVersion": 1,
+      "title": "65 different shadows",
+      "category": "visual",
+      "severity": "low",
+      "confidence": 0.6,
+      "source": "rendered",
+      "description": "There are 65 distinct box-shadow values. Elevation without a system makes depth meaningless.",
+      "recommendation": "Define two or three elevation levels and use them consistently.",
+      "evidence": [
+        {
+          "type": "metric",
+          "detail": "rgba(0, 0, 0, 0.12) 0px 1px 3px 0px on 24 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "rgba(13, 71, 161, 0.18) 0px 20px 50px -32px on 23 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "rgba(0, 0, 0, 0) 0px 0px 0px 0px on 14 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "rgba(13, 148, 136, 0.55) 0px 12px 28px -10px, rgba(255, 255, 255, 0.3) 0px 1px 0px 0px in… on 13 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "rgba(13, 71, 161, 0.04) 0px 1px 0px 0px, rgba(13, 71, 161, 0.2) 0px 16px 36px -28px on 8 elements"
+        },
+        {
+          "type": "metric",
+          "detail": "rgba(13, 71, 161, 0.22) 0px 24px 70px -36px on 6 elements"
+        }
+      ],
+      "verified": false,
+      "fingerprint": "78a92ceadc269e8a",
+      "id": "token-sprawl-78a92cea"
+    },
+    {
+      "ruleId": "cross-page-template",
+      "ruleVersion": 1,
+      "title": "Different pages, same template",
+      "category": "visual",
+      "severity": "low",
+      "confidence": 0.6,
+      "source": "rendered",
+      "description": "Across 8 distinct page types, 68% of section structure is shared on average. Pages with different purposes are built from the same blocks in a similar order.",
+      "recommendation": "Design each page around its own task: an about page tells a story, a pricing page compares, a docs page navigates. Reuse components, not whole page skeletons.",
+      "evidence": [
+        {
+          "type": "metric",
+          "detail": "/features vs /acnc-alignment: 75% shared structure",
+          "route": "/features"
+        },
+        {
+          "type": "metric",
+          "detail": "/features vs /marketplace: 75% shared structure",
+          "route": "/features"
+        },
+        {
+          "type": "metric",
+          "detail": "/features vs /about: 75% shared structure",
+          "route": "/features"
+        },
+        {
+          "type": "metric",
+          "detail": "/features vs /pricing: 75% shared structure",
+          "route": "/features"
+        },
+        {
+          "type": "metric",
+          "detail": "/features vs /faqs: 75% shared structure",
+          "route": "/features"
+        }
+      ],
+      "routes": [
+        "/",
+        "/features",
+        "/acnc-alignment",
+        "/marketplace",
+        "/about",
+        "/pricing",
+        "/faqs",
+        "/privacy"
+      ],
+      "verified": false,
+      "fingerprint": "d8a3c88e4a75845f",
+      "id": "cross-page-template-d8a3c88e"
+    },
+    {
+      "ruleId": "token-sprawl",
+      "ruleVersion": 1,
+      "title": "Spacing off a consistent scale",
+      "category": "visual",
+      "severity": "low",
+      "confidence": 0.35,
+      "source": "rendered",
+      "description": "91% of padding, margin, and gap values are not multiples of 4px.",
+      "recommendation": "Adopt a spacing scale (4px or 8px based) and replace one-off values with tokens.",
+      "evidence": [
+        {
+          "type": "metric",
+          "detail": "6.8px used 263 times"
+        },
+        {
+          "type": "metric",
+          "detail": "17px used 245 times"
+        },
+        {
+          "type": "metric",
+          "detail": "10.2px used 244 times"
+        },
+        {
+          "type": "metric",
+          "detail": "8.5px used 238 times"
+        },
+        {
+          "type": "metric",
+          "detail": "13.6px used 164 times"
+        },
+        {
+          "type": "metric",
+          "detail": "11.9px used 158 times"
+        },
+        {
+          "type": "metric",
+          "detail": "5.1px used 156 times"
+        },
+        {
+          "type": "metric",
+          "detail": "20.4px used 118 times"
+        }
+      ],
+      "verified": false,
+      "fingerprint": "709332294dab9de0",
+      "id": "token-sprawl-70933229"
+    }
+  ],
+  "coverage": {
+    "staticAnalysis": false,
+    "rendered": true,
+    "renderAttempted": true,
+    "pagesAudited": 10,
+    "pagesFailed": 0,
+    "routeLimitHit": false,
+    "skipped": [
+      {
+        "url": "https://www.stewardex.com.au/login",
+        "reason": "disallowed by robots.txt"
+      },
+      {
+        "url": "https://www.stewardex.com.au/register",
+        "reason": "disallowed by robots.txt"
+      }
+    ],
+    "interactions": true,
+    "blockedRequests": [
+      {
+        "url": "https://www.stewardex.com.au/assets/demoVideo-Da_30-a4.mp4",
+        "reason": "response is 32459814 bytes, over the 20971520 byte limit"
+      }
+    ],
+    "networkBudgetExceeded": false,
+    "model": {
+      "enabled": false,
+      "note": "no local model configured (optional; see --model)"
+    },
+    "limitations": [
+      "2 pages were skipped because robots.txt disallows them.",
+      "1 requests were blocked by the network policy (private, loopback, or unsupported addresses).",
+      "Technical quality currently covers page metadata only; performance and asset weight are not measured yet."
+    ]
+  },
+  "versions": {
+    "scoring": "2.0.0",
+    "rules": {
+      "stock-gradient": 1,
+      "glow-effects": 1,
+      "card-grid-sameness": 1,
+      "repeated-section-rhythm": 1,
+      "cross-page-template": 1,
+      "stock-landing-sequence": 1,
+      "centered-everything": 1,
+      "emoji-icons": 1,
+      "token-sprawl": 1,
+      "stock-copy": 1,
+      "placeholder-content": 1,
+      "duplicate-copy": 1,
+      "unverified-claims": 1,
+      "anonymous-testimonials": 1,
+      "generic-link-text": 1,
+      "page-load-failed": 1,
+      "broken-internal-links": 1,
+      "console-errors": 1,
+      "failed-requests": 1,
+      "placeholder-links": 1,
+      "unresponsive-buttons": 1,
+      "empty-controls": 1,
+      "broken-images": 1,
+      "missing-alt": 1,
+      "unlabeled-inputs": 1,
+      "heading-structure": 1,
+      "missing-metadata": 1,
+      "horizontal-overflow": 1,
+      "small-touch-targets": 1,
+      "tiny-text": 1,
+      "src-stock-gradient": 1,
+      "src-glow-effects": 1,
+      "src-emoji-icons": 1,
+      "src-placeholder-content": 1,
+      "src-stock-copy": 1,
+      "arbitrary-values": 1,
+      "duplicated-markup": 1
+    }
+  },
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "failedRoutes": [],
+  "pages": [
+    {
+      "url": "https://www.stewardex.com.au/",
+      "path": "/",
+      "status": 200,
+      "title": "Stewardex - Charities & Not for Profits Compliance",
+      "screenshots": {
+        "desktop": {
+          "file": "shots/01-home-desktop.jpg",
+          "width": 1440,
+          "height": 5000
+        },
+        "mobile": {
+          "file": "shots/01-home-mobile.jpg",
+          "width": 390,
+          "height": 6000
+        }
+      }
+    },
+    {
+      "url": "https://www.stewardex.com.au/features",
+      "path": "/features",
+      "status": 200,
+      "title": "Stewardex - Charities & Not for Profits Compliance",
+      "screenshots": {
+        "desktop": {
+          "file": "shots/02-features-desktop.jpg",
+          "width": 1440,
+          "height": 5000
+        },
+        "mobile": {
+          "file": "shots/02-features-mobile.jpg",
+          "width": 390,
+          "height": 6000
+        }
+      }
+    },
+    {
+      "url": "https://www.stewardex.com.au/acnc-alignment",
+      "path": "/acnc-alignment",
+      "status": 200,
+      "title": "Stewardex - Charities & Not for Profits Compliance",
+      "screenshots": {
+        "desktop": {
+          "file": "shots/03-acnc-alignment-desktop.jpg",
+          "width": 1440,
+          "height": 5000
+        },
+        "mobile": {
+          "file": "shots/03-acnc-alignment-mobile.jpg",
+          "width": 390,
+          "height": 6000
+        }
+      }
+    },
+    {
+      "url": "https://www.stewardex.com.au/marketplace",
+      "path": "/marketplace",
+      "status": 200,
+      "title": "Stewardex - Charities & Not for Profits Compliance",
+      "screenshots": {
+        "desktop": {
+          "file": "shots/04-marketplace-desktop.jpg",
+          "width": 1440,
+          "height": 2683
+        },
+        "mobile": {
+          "file": "shots/04-marketplace-mobile.jpg",
+          "width": 390,
+          "height": 6000
+        }
+      }
+    },
+    {
+      "url": "https://www.stewardex.com.au/about",
+      "path": "/about",
+      "status": 200,
+      "title": "Stewardex - Charities & Not for Profits Compliance",
+      "screenshots": {
+        "desktop": {
+          "file": "shots/05-about-desktop.jpg",
+          "width": 1440,
+          "height": 3721
+        },
+        "mobile": {
+          "file": "shots/05-about-mobile.jpg",
+          "width": 390,
+          "height": 5772
+        }
+      }
+    },
+    {
+      "url": "https://www.stewardex.com.au/pricing",
+      "path": "/pricing",
+      "status": 200,
+      "title": "Stewardex - Charities & Not for Profits Compliance",
+      "screenshots": {
+        "desktop": {
+          "file": "shots/06-pricing-desktop.jpg",
+          "width": 1440,
+          "height": 5000
+        },
+        "mobile": {
+          "file": "shots/06-pricing-mobile.jpg",
+          "width": 390,
+          "height": 6000
+        }
+      }
+    },
+    {
+      "url": "https://www.stewardex.com.au/faqs",
+      "path": "/faqs",
+      "status": 200,
+      "title": "Stewardex - Charities & Not for Profits Compliance",
+      "screenshots": {
+        "desktop": {
+          "file": "shots/07-faqs-desktop.jpg",
+          "width": 1440,
+          "height": 3316
+        },
+        "mobile": {
+          "file": "shots/07-faqs-mobile.jpg",
+          "width": 390,
+          "height": 4267
+        }
+      }
+    },
+    {
+      "url": "https://www.stewardex.com.au/contact-sales",
+      "path": "/contact-sales",
+      "status": 200,
+      "title": "Stewardex - Charities & Not for Profits Compliance",
+      "screenshots": {
+        "desktop": {
+          "file": "shots/08-contact-sales-desktop.jpg",
+          "width": 1440,
+          "height": 1629
+        },
+        "mobile": {
+          "file": "shots/08-contact-sales-mobile.jpg",
+          "width": 390,
+          "height": 2714
+        }
+      }
+    },
+    {
+      "url": "https://www.stewardex.com.au/privacy",
+      "path": "/privacy",
+      "status": 200,
+      "title": "Stewardex - Charities & Not for Profits Compliance",
+      "screenshots": {
+        "desktop": {
+          "file": "shots/09-privacy-desktop.jpg",
+          "width": 1440,
+          "height": 3936
+        },
+        "mobile": {
+          "file": "shots/09-privacy-mobile.jpg",
+          "width": 390,
+          "height": 6000
+        }
+      }
+    },
+    {
+      "url": "https://www.stewardex.com.au/account-deletion",
+      "path": "/account-deletion",
+      "status": 200,
+      "title": "Stewardex - Charities & Not for Profits Compliance",
+      "screenshots": {
+        "desktop": {
+          "file": "shots/10-account-deletion-desktop.jpg",
+          "width": 1440,
+          "height": 1480
+        },
+        "mobile": {
+          "file": "shots/10-account-deletion-mobile.jpg",
+          "width": 390,
+          "height": 2264
+        }
+      }
+    }
+  ]
+}

@@ -43,7 +43,7 @@ export async function launchBrowser(policy: NetworkPolicy): Promise<Browser> {
   try {
     ({ chromium } = await import('playwright'));
   } catch {
-    throw new BrowserMissingError('Playwright is not installed. Run `npm install playwright` in the unslop package.');
+    throw new BrowserMissingError('Playwright is missing from the samey install. Reinstall samey, or use --static-only.');
   }
   try {
     return await chromium.launch({
@@ -54,7 +54,7 @@ export async function launchBrowser(policy: NetworkPolicy): Promise<Browser> {
   } catch (err) {
     const msg = (err as Error).message;
     if (/Executable doesn't exist|browserType.launch/i.test(msg)) {
-      throw new BrowserMissingError('Chromium for Playwright is not installed. Run `npx playwright install chromium`, or use --static-only.');
+      throw new BrowserMissingError('Chromium is not installed yet. Run `npx samey setup` once (about 150 MB), or use --static-only to skip rendered checks.');
     }
     throw err;
   }
@@ -216,14 +216,14 @@ export async function crawl(browser: Browser, opts: CrawlOptions): Promise<Crawl
     hasTouch: true,
     deviceScaleFactor: 1,
     userAgent:
-      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1 unslop',
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1 samey',
   });
 
   const limits = opts.limits ?? DEFAULT_LIMITS;
   const network = newNetworkLog();
   await guardContext(desktop, opts.policy, limits, network);
   await guardContext(mobile, opts.policy, limits, network);
-  const fetchOpts = { policy: opts.policy, maxBytes: 2 * 1024 * 1024, timeoutMs: Math.min(opts.navTimeoutMs, 10_000), headers: { 'user-agent': 'unslop' } };
+  const fetchOpts = { policy: opts.policy, maxBytes: 2 * 1024 * 1024, timeoutMs: Math.min(opts.navTimeoutMs, 10_000), headers: { 'user-agent': 'samey' } };
 
   // If the start URL redirects (example.com to www.example.com, http to https), crawl the site it lands on.
   let startUrl = opts.startUrl;

@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Renamed
+- The project is now **samey** (was unslop): the npm name `unslop` belongs to an unrelated tool. The command, package, report branding, output folder (`.samey/`), and config file (`samey.config.json`) all changed.
+
 ### Security
 - All browser requests are intercepted and performed by a Node client that validates the URL, resolves DNS, rejects names with any non-public address, and pins the connection to the validated address (DNS rebinding).
 - Redirects are re-validated hop by hop; loops and long chains are stopped. Per-response (20 MB) and per-crawl (250 MB, 3,000 requests) limits.
@@ -12,7 +15,7 @@
 
 ### Fixed
 - Sites that redirect (bare domain to `www`, `http` to `https`, moved pages) failed every page with `ERR_PROXY_CONNECTION_FAILED`: Chromium followed redirects from intercepted responses outside the guard. Navigation redirects are now re-checked and followed by the crawler, subresource redirects are followed hop by hop in Node, and a redirecting start URL adopts its final origin.
-- Requests unslop itself blocked (for example a video over the 20 MB response cap) were reported as failed assets and console errors on the site. They are now listed only under coverage.
+- Requests samey itself blocked (for example a video over the 20 MB response cap) were reported as failed assets and console errors on the site. They are now listed only under coverage.
 - Redirected pages are recorded under the URL they landed on and are not audited twice.
 - Reports and progress output show local paths relative to home or the working directory instead of the full path.
 

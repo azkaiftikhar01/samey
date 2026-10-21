@@ -53,12 +53,12 @@ export const DEFAULTS: Omit<AuditOptions, 'outDir'> = {
   modelTimeoutMs: 120_000,
 };
 
-/** Keys accepted in unslop.config.json. Anything else is rejected so typos surface. */
+/** Keys accepted in samey.config.json. Anything else is rejected so typos surface. */
 const FILE_KEYS = new Set(['maxRoutes', 'navTimeoutMs', 'pageTimeoutMs', 'serverTimeoutMs', 'ignoreRules', 'routes', 'failAbove', 'model', 'modelEndpoint', 'serve', 'port', 'interact', 'respectRobots', 'screenshots']);
 
 export function loadConfigFile(dir: string | undefined): Partial<AuditOptions> {
   if (!dir) return {};
-  const file = path.join(dir, 'unslop.config.json');
+  const file = path.join(dir, 'samey.config.json');
   if (!existsSync(file)) return {};
   let parsed: Record<string, unknown>;
   try {
@@ -67,6 +67,6 @@ export function loadConfigFile(dir: string | undefined): Partial<AuditOptions> {
     throw new Error(`Could not parse ${file}: ${(err as Error).message}`);
   }
   const unknown = Object.keys(parsed).filter((k) => !FILE_KEYS.has(k) && k !== '$schema');
-  if (unknown.length) throw new Error(`Unknown key${unknown.length > 1 ? 's' : ''} in unslop.config.json: ${unknown.join(', ')}`);
+  if (unknown.length) throw new Error(`Unknown key${unknown.length > 1 ? 's' : ''} in samey.config.json: ${unknown.join(', ')}`);
   return parsed as Partial<AuditOptions>;
 }

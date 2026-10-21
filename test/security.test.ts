@@ -187,7 +187,7 @@ describe('guarded fetch', () => {
 
 const hasBrowser = existsSync(chromium.executablePath());
 describe.skipIf(!hasBrowser)('browser crawl under the remote policy', () => {
-  const out = mkdtempSync(path.join(os.tmpdir(), 'unslop-sec-'));
+  const out = mkdtempSync(path.join(os.tmpdir(), 'samey-sec-'));
   afterAll(() => rmSync(out, { recursive: true, force: true }));
 
   it('lets no request from an adversarial page reach loopback, metadata, or private addresses', async () => {
@@ -206,7 +206,7 @@ describe.skipIf(!hasBrowser)('browser crawl under the remote policy', () => {
 });
 
 describe.skipIf(!hasBrowser)('redirects in the browser', () => {
-  const out = mkdtempSync(path.join(os.tmpdir(), 'unslop-redir-'));
+  const out = mkdtempSync(path.join(os.tmpdir(), 'samey-redir-'));
   afterAll(() => rmSync(out, { recursive: true, force: true }));
 
   it('adopts the start URL redirect, follows page and image redirects, and still blocks bad hops', async () => {

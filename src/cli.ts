@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 import { Command, InvalidArgumentError, Option } from 'commander';
+import { spawnSync } from 'node:child_process';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import pc from 'picocolors';
 import { runAudit, toolVersion } from './audit.js';
@@ -14,7 +16,7 @@ const int = (name: string, min = 1) => (v: string) => {
 };
 
 const program = new Command();
-program.name('unslop').description('Lint your AI-built UI. Finds what looks generic, what is broken, and where to fix it.').version(toolVersion());
+program.name('samey').description('Lint your AI-built UI. Finds what looks generic, what is broken, and where to fix it.').version(toolVersion());
 
 program
   .command('audit')
@@ -29,7 +31,7 @@ program
   .option('--route <path...>', 'extra routes to audit, e.g. --route /pricing /about')
   .addOption(new Option('--format <format>', 'report output').choices(['html', 'json', 'both']).default('both'))
   .addOption(new Option('--report <format>', 'alias for --format').choices(['html', 'json', 'both']))
-  .option('-o, --out <dir>', 'output directory (default: <path>/.unslop or ./.unslop)')
+  .option('-o, --out <dir>', 'output directory (default: <path>/.samey or ./.samey)')
   .option('--static-only', 'skip rendering; only scan source files')
   .option('--no-screenshots', 'do not capture screenshots')
   .option('--no-interact', 'do not click any buttons')
@@ -44,7 +46,7 @@ program
   .action(async (target: string | undefined, o) => {
     const dir = target ? path.resolve(target) : undefined;
     if (!dir && !o.url) {
-      program.error('Pass a project path, --url, or both. Example: unslop audit . or unslop audit --url https://example.com', { exitCode: 2 });
+      program.error('Pass a project path, --url, or both. Example: samey audit . or samey audit --url https://example.com', { exitCode: 2 });
     }
     let file: Partial<AuditOptions>;
     try {
@@ -70,7 +72,7 @@ program
       navTimeoutMs: src('timeout') === 'default' && file.navTimeoutMs ? file.navTimeoutMs : o.timeout * 1000,
       pageTimeoutMs: file.pageTimeoutMs ?? DEFAULTS.pageTimeoutMs,
       serverTimeoutMs: file.serverTimeoutMs ?? DEFAULTS.serverTimeoutMs,
-      outDir: o.out ? path.resolve(o.out) : path.join(dir ?? process.cwd(), '.unslop'),
+      outDir: o.out ? path.resolve(o.out) : path.join(dir ?? process.cwd(), '.samey'),
       formats: (o.report ?? o.format) === 'both' ? ['html', 'json'] : [o.report ?? o.format],
       screenshots: o.screenshots && file.screenshots !== false,
       interact: o.interact && file.interact !== false,
@@ -114,8 +116,19 @@ program
   });
 
 program
+  .command('setup')
+  .description('Download the Chromium build that samey uses for rendered checks (about 150 MB, once)')
+  .action(() => {
+    // Use the Playwright version samey ships with, so the browser always matches it.
+    const require = createRequire(import.meta.url);
+    const cli = path.join(path.dirname(require.resolve('playwright/package.json')), 'cli.js');
+    const res = spawnSync(process.execPath, [cli, 'install', 'chromium'], { stdio: 'inherit' });
+    process.exitCode = res.status ?? 2;
+  });
+
+program
   .command('rules')
-  .description('List every rule unslop runs')
+  .description('List every rule samey runs')
   .action(() => {
     for (const r of allRules) {
       console.log(`${pc.bold(r.id.padEnd(26))} ${pc.dim(`[${r.category}, ${r.needs}]`)}\n  ${r.description}`);

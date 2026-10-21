@@ -17,17 +17,17 @@ export function isSafeControl(c: ControlFact): boolean {
 }
 
 function installObserver(): void {
-  const w = window as unknown as { __unslopMutations?: number; __unslopObs?: MutationObserver };
-  w.__unslopMutations = 0;
-  w.__unslopObs?.disconnect();
-  w.__unslopObs = new MutationObserver((list) => {
-    w.__unslopMutations = (w.__unslopMutations ?? 0) + list.length;
+  const w = window as unknown as { __sameyMutations?: number; __sameyObs?: MutationObserver };
+  w.__sameyMutations = 0;
+  w.__sameyObs?.disconnect();
+  w.__sameyObs = new MutationObserver((list) => {
+    w.__sameyMutations = (w.__sameyMutations ?? 0) + list.length;
   });
-  w.__unslopObs.observe(document.documentElement, { subtree: true, childList: true, attributes: true, characterData: true });
+  w.__sameyObs.observe(document.documentElement, { subtree: true, childList: true, attributes: true, characterData: true });
 }
 
 function readMutations(): number {
-  return (window as unknown as { __unslopMutations?: number }).__unslopMutations ?? 0;
+  return (window as unknown as { __sameyMutations?: number }).__sameyMutations ?? 0;
 }
 
 /**

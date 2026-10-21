@@ -24,7 +24,7 @@ export interface NetworkLog {
    * here and the crawler re-navigates to the validated target itself.
    */
   navRedirects: Map<string, string>;
-  /** Full URLs the guard refused. Their failures are unslop's doing, not the site's. */
+  /** Full URLs the guard refused. Their failures are samey's doing, not the site's. */
   blockedUrls: Set<string>;
   requests: number;
   bytes: number;

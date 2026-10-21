@@ -1,12 +1,12 @@
-# unslop
+# samey
 
 Lint your AI-built UI.
 
-unslop audits a website built with Claude Code, Cursor, Codex, or any other coding agent and reports what makes it feel generic, broken, or unfinished: stock gradients and glow effects, the same card grid in every section, interchangeable marketing copy, placeholder content, dead links and buttons, mobile overflow, and accessibility gaps. Every finding comes with evidence (page, selector, screenshot crop, and `file:line` when it can be traced to source) and a concrete fix.
+samey audits a website built with Claude Code, Cursor, Codex, or any other coding agent and reports what makes it feel generic, broken, or unfinished: stock gradients and glow effects, the same card grid in every section, interchangeable marketing copy, placeholder content, dead links and buttons, mobile overflow, and accessibility gaps. Every finding comes with evidence (page, selector, screenshot crop, and `file:line` when it can be traced to source) and a concrete fix.
 
 It runs entirely on your machine. There is no account, no API key, and no cloud inference. An optional local vision model can add an advisory critique, but the core engine is deterministic and works without one.
 
-unslop measures observable patterns. It does not try to determine whether a site was written by AI, and it does not penalize a site just for using popular conventions.
+samey measures observable patterns. It does not try to determine whether a site was written by AI, and it does not penalize a site just for using popular conventions.
 
 ## Quick start
 
@@ -18,7 +18,7 @@ npm run build
 # a project with a static build (out/, dist/, build/, or plain HTML)
 node dist/cli.js audit ./my-site
 
-# a project with a dev server (unslop starts it, audits it, stops it)
+# a project with a dev server (samey starts it, audits it, stops it)
 node dist/cli.js audit ./my-app --serve "npm run dev" --port 3000
 
 # a deployed site
@@ -29,7 +29,7 @@ node dist/cli.js audit ./my-app --url https://my-app.vercel.app
 node dist/cli.js audit ./my-app --url http://localhost:3000 --dev
 ```
 
-The report is written to `<project>/.unslop/report.html` (self-contained, open it in any browser) and `report.json`. Add `.unslop/` to your `.gitignore`.
+The report is written to `<project>/.samey/report.html` (self-contained, open it in any browser) and `report.json`. Add `.samey/` to your `.gitignore`.
 
 ## What you get
 
@@ -37,13 +37,13 @@ The report is written to `<project>/.unslop/report.html` (self-contained, open i
 - A "fix first" list ordered by severity and confidence. Each finding is marked as a verified defect (measured) or a design observation (a heuristic that needs your judgment).
 - Each finding with evidence: the page and viewport, CSS selector, a screenshot crop with the element outlined, the source line where the text or class lives, and a recommendation.
 - Desktop (1440px) and mobile (390px) screenshots of each audited page.
-- A "copy fix prompt" button on every finding, and a tray to combine selected findings into one prompt you can paste into your coding agent. Rerun unslop afterwards to verify.
+- A "copy fix prompt" button on every finding, and a tray to combine selected findings into one prompt you can paste into your coding agent. Rerun samey afterwards to verify.
 
 ## Commands
 
 ```
-unslop audit [path] [options]
-unslop rules
+samey audit [path] [options]
+samey rules
 ```
 
 | Option | Default | Description |
@@ -56,12 +56,12 @@ unslop rules
 | `--timeout <seconds>` | 30 | Navigation timeout per page. |
 | `--route <path...>` | | Extra routes to audit. |
 | `--format <html\|json\|both>` | both | Which reports to write. `--report` is an alias. |
-| `-o, --out <dir>` | `<path>/.unslop` | Output directory. |
+| `-o, --out <dir>` | `<path>/.samey` | Output directory. |
 | `--static-only` | | Only scan source files; do not launch a browser. |
 | `--no-screenshots` | | Skip screenshots. |
 | `--no-interact` | | Do not click any buttons. |
 | `--ignore-robots` | | Crawl pages disallowed by robots.txt. Only for sites you own. |
-| `--ignore <rules...>` | | Rule ids to skip (see `unslop rules`). |
+| `--ignore <rules...>` | | Rule ids to skip (see `samey rules`). |
 | `--fail-above <score>` | | Exit with code 1 if the slop score is above this. For CI. |
 | `--model <name>` | | Local Ollama vision model for an advisory critique. |
 | `--model-endpoint <url>` | `http://127.0.0.1:11434` | Must be a loopback address. |
@@ -73,7 +73,7 @@ Exit codes: `0` success, `1` score above `--fail-above`, `2` the audit could not
 
 ### Config file
 
-`unslop.config.json` in the project root sets defaults. Command-line flags win.
+`samey.config.json` in the project root sets defaults. Command-line flags win.
 
 ```json
 {
@@ -86,20 +86,20 @@ Exit codes: `0` success, `1` score above `--fail-above`, `2` the audit could not
 }
 ```
 
-`serve` in the config file is only used when you also pass `--serve` on the command line, so cloning an untrusted repository and running `unslop audit .` never executes its code.
+`serve` in the config file is only used when you also pass `--serve` on the command line, so cloning an untrusted repository and running `samey audit .` never executes its code.
 
 ## How the target is chosen
 
 1. `--url` if given. Public addresses only, unless you pass `--dev`.
-2. Otherwise, with `--serve`, the dev server unslop starts.
-3. Otherwise, a static build in the project (`out/`, `dist/`, `build/`, `_site/`), or the project root if it is plain HTML. unslop serves it read-only on 127.0.0.1.
+2. Otherwise, with `--serve`, the dev server samey starts.
+3. Otherwise, a static build in the project (`out/`, `dist/`, `build/`, `_site/`), or the project root if it is plain HTML. samey serves it read-only on 127.0.0.1.
 4. Otherwise only static analysis runs, and the report says so. Categories that need a rendered page show n/a rather than a perfect score.
 
 Routes are discovered from links, `sitemap.xml`, `--route`, and route files in the project (Next.js `app/` and `pages/`, SvelteKit, Astro, React Router paths). Dynamic routes like `/blog/[slug]` are skipped.
 
 ## What it checks
 
-Run `unslop rules` for the full list. In summary:
+Run `samey rules` for the full list. In summary:
 
 **Visual genericness**: blue-violet-pink gradients (including gradient text), decorative glows, blur blobs and glass panels, one card composition reused across sections, consecutive sections with identical layout, different pages built from the same skeleton, the stock hero-logos-features-testimonials-pricing-FAQ-CTA sequence, centered everything, emoji used as icons.
 
@@ -115,7 +115,7 @@ Static checks on the source tree mirror several rendered checks. When both fire,
 
 ### Safe click testing
 
-On each page, unslop clicks up to six visible buttons to see whether anything happens. It never clicks links (those are checked by the crawler), anything inside a form, submit buttons, or anything labelled like delete, buy, pay, checkout, subscribe, log out, send, confirm, and similar. Use `--no-interact` to turn this off.
+On each page, samey clicks up to six visible buttons to see whether anything happens. It never clicks links (those are checked by the crawler), anything inside a form, submit buttons, or anything labelled like delete, buy, pay, checkout, subscribe, log out, send, confirm, and similar. Use `--no-interact` to turn this off.
 
 ## Scoring
 
@@ -141,7 +141,7 @@ Categories that could not be measured (for example functional defects in a stati
 
 ## Network safety
 
-Every request the browser makes is intercepted and performed by unslop itself, so the audited page cannot use the browser to reach places it should not:
+Every request the browser makes is intercepted and performed by samey itself, so the audited page cannot use the browser to reach places it should not:
 
 - Only `http` and `https`. URLs with embedded credentials are refused.
 - In normal mode only public addresses are reachable. Loopback, private (including carrier-grade NAT), link-local, multicast, documentation, and other reserved ranges are blocked, including IPv4-mapped, NAT64, and 6to4 IPv6 forms and numeric tricks like `http://2130706433/`.
@@ -150,7 +150,7 @@ Every request the browser makes is intercepted and performed by unslop itself, s
 - Responses are capped at 20 MB each and 250 MB per crawl, with 3,000 requests at most.
 - Service workers, downloads, and pop-up windows are blocked. WebSockets are blocked in normal mode. Anything Chromium tries to send outside the interception (preconnects, WebRTC) goes to a closed local port.
 - Cloud metadata addresses (169.254.169.254 and others) are never reachable, even with `--dev`.
-- With `--dev`, loopback and private addresses are allowed so you can audit a local server. When unslop starts the server itself (static build or `--serve`), only loopback is allowed.
+- With `--dev`, loopback and private addresses are allowed so you can audit a local server. When samey starts the server itself (static build or `--serve`), only loopback is allowed.
 - Crawling stays on the starting origin. Pages that redirect to another site are skipped.
 
 Blocked requests are listed in the report's coverage section. Text on the audited page is treated as content, never as instructions.
@@ -159,27 +159,27 @@ Blocked requests are listed in the report's coverage section. Text on the audite
 
 ```bash
 ollama pull qwen2.5vl:7b
-unslop audit . --model qwen2.5vl:7b
+samey audit . --model qwen2.5vl:7b
 ```
 
-unslop sends up to three desktop screenshots to the model and asks for specific visual observations. Only loopback endpoints are accepted, so screenshots never leave your machine. Model observations are marked advisory, given confidence 0.3, and never change the score. No model has been benchmarked with unslop yet; the model name is recorded in the report. If no model is configured or the server is not running, the audit runs normally and the report notes it.
+samey sends up to three desktop screenshots to the model and asks for specific visual observations. Only loopback endpoints are accepted, so screenshots never leave your machine. Model observations are marked advisory, given confidence 0.3, and never change the score. No model has been benchmarked with samey yet; the model name is recorded in the report. If no model is configured or the server is not running, the audit runs normally and the report notes it.
 
 ## Using it with a coding agent
 
-1. Run `unslop audit .`.
-2. Open the report, tick the findings you want fixed, and click "Copy fix prompt" (or point the agent at `.unslop/report.json`).
+1. Run `samey audit .`.
+2. Open the report, tick the findings you want fixed, and click "Copy fix prompt" (or point the agent at `.samey/report.json`).
 3. Paste into Claude Code, Cursor, or Codex.
-4. Run unslop again to confirm the findings are gone.
+4. Run samey again to confirm the findings are gone.
 
 See [AGENTS.md](AGENTS.md) for the JSON shape an agent can rely on.
 
 ## Limits
 
 - Ten routes and two viewports by default. Large sites are sampled, not exhausted.
-- Accessibility checks are unslop's own, not axe-core yet, and technical quality covers page metadata only (no Lighthouse yet). See PLAN.md.
+- Accessibility checks are samey's own, not axe-core yet, and technical quality covers page metadata only (no Lighthouse yet). See PLAN.md.
 - Heuristics are tuned to avoid false positives on plain, well-built pages, but they are heuristics. Low-confidence findings are worth a look, not an automatic fix.
 - Single-page apps that render routes without real URLs only get their first screen audited.
-- unslop never modifies your source files.
+- samey never modifies your source files.
 
 ## Development
 

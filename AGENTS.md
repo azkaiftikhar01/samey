@@ -1,8 +1,8 @@
 # Notes for coding agents
 
-Two audiences: agents working on unslop itself, and agents fixing a site using an unslop report.
+Two audiences: agents working on samey itself, and agents fixing a site using an samey report.
 
-## Working on unslop
+## Working on samey
 
 ### Layout
 
@@ -10,7 +10,7 @@ Two audiences: agents working on unslop itself, and agents fixing a site using a
 src/
   cli.ts              command-line entry (commander)
   audit.ts            orchestration: scan repo, pick target, crawl, run rules, score, write reports
-  config.ts           options, defaults, unslop.config.json loading
+  config.ts           options, defaults, samey.config.json loading
   types.ts            all shared types: facts, findings, report
   score.ts            versioned scoring config, saturating category scores, prioritization
   security/
@@ -57,9 +57,9 @@ fixtures/             sloppy-site, clean-site, react-app
 - **No code execution without consent.** Project scripts run only via `--serve` on the command line.
 - Keep `README.md` and `PLAN.md` accurate when behaviour changes.
 
-## Fixing a site from an unslop report
+## Fixing a site from an samey report
 
-Read `.unslop/report.json`. The parts you need:
+Read `.samey/report.json`. The parts you need:
 
 ```ts
 {
@@ -73,7 +73,7 @@ Read `.unslop/report.json`. The parts you need:
   findings: Array<{
     id: string,                         // `${ruleId}-${fingerprint prefix}`, stable across runs for the same evidence
     fingerprint: string,
-    ruleId: string,                     // see `unslop rules`
+    ruleId: string,                     // see `samey rules`
     ruleVersion: number,
     title: string,
     category: 'visual' | 'content' | 'functional' | 'accessibility' | 'technical',
@@ -101,4 +101,4 @@ Findings are already sorted in fix-first order. Suggested approach:
 2. Use `file` and `line` when present. Otherwise search the source for the `excerpt` text, or map `selector` and `route` to the component that renders it. `alsoOn` means the same element appears on other routes, usually a shared component: fix it once.
 3. For genericness findings, change the design decision, not just the one element: replace the gradient token, vary the section layouts, rewrite the copy with specifics.
 4. Treat findings with confidence below 0.5 as questions for the user (for example whether a "10,000+ users" claim is real) rather than deleting content on your own.
-5. Rerun `unslop audit` and confirm the finding is gone.
+5. Rerun `samey audit` and confirm the finding is gone.

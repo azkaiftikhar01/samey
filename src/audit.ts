@@ -101,13 +101,13 @@ export async function runAudit(opts: AuditOptions): Promise<AuditResult> {
       } else {
         coverage.renderedNote =
           'No URL was given, the project has no static build to serve, and --serve was not passed, so rendered checks did not run. ' +
-          "Pass --url http://localhost:3000 for a running server, or --serve 'npm run dev' to let unslop start it.";
+          "Pass --url http://localhost:3000 for a running server, or --serve 'npm run dev' to let samey start it.";
       }
     }
     if (opts.staticOnly) coverage.renderedNote = 'Rendered checks were disabled with --static-only.';
 
     if (target) {
-      // A server unslop started is on loopback; it does not need access to the rest of the private network.
+      // A server samey started is on loopback; it does not need access to the rest of the private network.
       const policy: NetworkPolicy = opts.policyOverride ?? (server ? { allowLoopback: true, allowPrivate: false } : urlPolicy);
       const browser = await launchBrowser(policy).catch((err) => {
         if (err instanceof BrowserMissingError) {
@@ -185,11 +185,11 @@ export async function runAudit(opts: AuditOptions): Promise<AuditResult> {
   const report: AuditReport = {
     schemaVersion: 1,
     scanId: randomUUID(),
-    tool: { name: 'unslop', version: toolVersion() },
+    tool: { name: 'samey', version: toolVersion() },
     generatedAt: new Date().toISOString(),
     durationMs: Date.now() - began,
     project: { id: createHash('sha256').update(projectKey).digest('hex').slice(0, 12), name: repo?.name ?? (opts.url ? new URL(opts.url).hostname : undefined) },
-    // The ephemeral 127.0.0.1 address of a server unslop started itself is not useful to report.
+    // The ephemeral 127.0.0.1 address of a server samey started itself is not useful to report.
     target: { path: repo?.root, url: opts.url ? displayUrl(opts.url) : undefined },
     score,
     categories,
