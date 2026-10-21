@@ -16,7 +16,7 @@ The first vertical slice (brief section 16) is complete, URL security (section 1
 | 4D Visual genericness | Done for the listed deterministic checks. Design brief input is not supported yet. |
 | 4E Content analysis | Partly. Placeholders, duplicate paragraphs, stock phrases, claims flagged for verification. Missing: repeated headings and repeated CTA text across pages. |
 | 4F Standard checks | **Not done.** Accessibility checks are hand-written; axe-core and Lighthouse are not integrated. No contrast, performance, or asset-weight checks. |
-| 4G Outputs | Done. |
+| 4G Outputs | Done, plus a ready-to-paste fix prompt (`fix-prompt.md`, `samey prompt`). |
 | 5 Architecture | Single package with engine modules separate from CLI and report. Not a monorepo (the brief allows starting smaller). No Cheerio, PostCSS, or Zod yet. |
 | 6 Local models | Partly. Ollama adapter, loopback only, advisory, recorded in the report. Missing: the `LocalVisionAnalyzer` interface, caching by screenshot hash + model + prompt version, page text and structural facts as model input, Zod validation, and an actual evaluation of Qwen and Gemma vision models (no Ollama on the dev machine). |
 | 7 Finding model | Done: numeric confidence, fingerprint, verified flag, evidence types, safe source paths, secret redaction, dedup by fingerprint; scan id, versions, viewports, failed routes, limitations, duration. |
@@ -33,7 +33,8 @@ The first vertical slice (brief section 16) is complete, URL security (section 1
 2. **Fixtures and benchmark.** Add the missing fixtures from section 12 (handcrafted but generic, intentional repetition, consistent multi-page design system, broken responsive, delayed rendering and dynamic routes, prompt injection as a standalone site), then a small human-labeled benchmark to start calibrating weights.
 3. **Model pipeline.** `LocalVisionAnalyzer` interface, Zod-validated output, cache keyed by screenshot hash + model + prompt version, structural facts as input with page text marked as untrusted, then evaluate a Qwen VL and a Gemma vision model on the fixtures.
 4. **Content gaps.** Repeated headings and CTA text across pages; safe form checks (labels, a submit control, no real submission).
-5. **Tooling.** ESLint and Prettier, first commit with the lockfile, CI running the test suite.
+5. **Tooling.** ESLint and Prettier, CI running the test suite.
+6. **Launch.** Publish to npm (package prepared and verified from a packed tarball), then the posts in the launch plan.
 
 Explicit non-goals for now: hosted dashboard, accounts, browser or editor extensions, automatic code changes, custom model training, remote inference.
 

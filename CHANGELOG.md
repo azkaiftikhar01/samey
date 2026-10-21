@@ -13,7 +13,13 @@
 - New `--dev` flag required to audit localhost or private `--url` targets. Metadata addresses stay blocked.
 - Secrets in excerpts are redacted; source paths in findings must be relative, inside the project, and in the scanned file set.
 
+### Added
+- Every audit writes `.samey/fix-prompt.md`: a ready-to-paste prompt for Claude Code, Cursor or Codex, measured defects first, then design observations, each with page, selector, file:line and the fix. `samey prompt` prints it (`--only-defects` to skip observations). The report's copy buttons use the same text.
+- `samey setup` installs Chromium with samey's bundled Playwright.
+- The NovaFlow before/after example (`examples/novaflow`) and a demo GIF in the README.
+
 ### Fixed
+- HTML document boilerplate (doctype, head, meta tags) shared by every page was reported as copy-pasted component markup.
 - Sites that redirect (bare domain to `www`, `http` to `https`, moved pages) failed every page with `ERR_PROXY_CONNECTION_FAILED`: Chromium followed redirects from intercepted responses outside the guard. Navigation redirects are now re-checked and followed by the crawler, subresource redirects are followed hop by hop in Node, and a redirecting start URL adopts its final origin.
 - Requests samey itself blocked (for example a video over the 20 MB response cap) were reported as failed assets and console errors on the site. They are now listed only under coverage.
 - Redirected pages are recorded under the URL they landed on and are not audited twice.

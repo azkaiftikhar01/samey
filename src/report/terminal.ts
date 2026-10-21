@@ -66,7 +66,8 @@ export function summarize(report: AuditReport, files: { html?: string; json?: st
     // Spell out the exact command, since `samey prompt` looks in <path>/.samey unless told otherwise.
     const dir = path.dirname(files.prompt);
     const base = report.target.path ?? process.cwd();
-    const arg = dir === path.join(base, '.samey') ? (rel(base) === base ? (report.target.path ? ` ${base}` : '') : rel(base) ? ` ${rel(base)}` : '') : ` --out ${rel(dir)}`;
+    const fromCwd = path.relative(process.cwd(), base);
+    const arg = dir !== path.join(base, '.samey') ? ` --out ${rel(dir)}` : !fromCwd ? '' : fromCwd.startsWith('..') ? ` ${base}` : ` ${fromCwd}`;
     out.push(pc.dim(`          Paste it into Claude Code, Cursor or Codex, or copy it: npx samey prompt${arg}${process.platform === 'darwin' ? ' | pbcopy' : ''}`));
   }
   out.push('');

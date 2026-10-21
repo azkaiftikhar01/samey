@@ -1,49 +1,79 @@
 # samey
 
-Lint your AI-built UI.
+**Is your AI-built site samey?** samey audits a website built with Claude Code, Cursor, Codex or any other coding agent, shows you what makes it look like every other one, and writes a prompt your agent can use to fix it.
 
-samey audits a website built with Claude Code, Cursor, Codex, or any other coding agent and reports what makes it feel generic, broken, or unfinished: stock gradients and glow effects, the same card grid in every section, interchangeable marketing copy, placeholder content, dead links and buttons, mobile overflow, and accessibility gaps. Every finding comes with evidence (page, selector, screenshot crop, and `file:line` when it can be traced to source) and a concrete fix.
+```bash
+npx samey audit .
+```
 
-It runs entirely on your machine. There is no account, no API key, and no cloud inference. An optional local vision model can add an advisory critique, but the core engine is deterministic and works without one.
+![samey auditing a generic landing page, writing a fix prompt, and re-auditing the fixed site](docs/samey-demo.gif)
 
-samey measures observable patterns. It does not try to determine whether a site was written by AI, and it does not penalize a site just for using popular conventions.
+> **Early release.** The rules work and are tested, but the scoring weights have not been calibrated against human judgment yet. If samey flags something that looks fine to you, or misses something obvious, please [open an issue](https://github.com/azkaiftikhar01/samey/issues) with the URL or a screenshot. That feedback is exactly what will make it accurate.
+
+## What it catches
+
+- **Stock visuals:** the blue-violet-pink gradient, gradient headline text, glows and blurred blobs, emoji used as icons, everything centered.
+- **Sameness:** the same three-card grid in every section, the hero-logos-features-testimonials-pricing-FAQ sequence, different pages built from one skeleton.
+- **Template copy:** "Unlock the power of seamless...", lorem ipsum, Jane Doe at Acme, unsourced "Trusted by 10,000+ teams".
+- **Things that are simply broken:** links to `#`, buttons that do nothing, broken links and images, console errors, pages that scroll sideways on a phone.
+- **Accessibility gaps:** buttons without names, images without alt text, unlabeled inputs, tiny touch targets.
+
+Every finding has evidence you can check: the page and viewport, the CSS selector, a screenshot crop with the element outlined, and the source file and line when samey can trace it. Measured defects are kept separate from design observations, which are heuristics that need your judgment. Popular conventions are not penalized on their own.
+
+samey runs entirely on your machine: no account, no API key, no cloud. It measures what is on the page; it does not try to guess who or what wrote it.
+
+## Before and after
+
+![The same NovaFlow landing page before and after fixing samey's findings](docs/before-after.jpg)
+
+| | Slop score | Findings |
+| --- | ---: | ---: |
+| [Before](examples/novaflow/before) | 53.3 | 26 |
+| [After](examples/novaflow/after) | 0 | 0 |
+
+The before site is a deliberately generic landing page. samey produced [this fix prompt](examples/novaflow/fix-prompt.md) for it, and the after site is that site rewritten from the prompt by a coding agent: one deliberate accent colour instead of the gradient, a product preview and a worked example instead of three-card grids, a pricing table, real links, and the invented testimonials and user counts removed rather than reworded. Run both yourself:
+
+```bash
+npx samey audit examples/novaflow/before
+npx samey audit examples/novaflow/after
+```
+
+A score of 0 means samey found nothing to flag, not that a site is perfect. It is a small demo site; real sites will rarely reach zero.
 
 ## Quick start
 
 ```bash
-npm install
-npx playwright install chromium   # once, for rendered checks
-npm run build
+npx samey setup                    # once: downloads the Chromium build samey uses (about 150 MB)
 
-# a project with a static build (out/, dist/, build/, or plain HTML)
-node dist/cli.js audit ./my-site
-
-# a project with a dev server (samey starts it, audits it, stops it)
-node dist/cli.js audit ./my-app --serve "npm run dev" --port 3000
-
-# a deployed site
-node dist/cli.js audit --url https://my-app.vercel.app
-node dist/cli.js audit ./my-app --url https://my-app.vercel.app
-
-# a dev server you already started (local addresses need --dev)
-node dist/cli.js audit ./my-app --url http://localhost:3000 --dev
+npx samey audit .                  # a static build (out/, dist/, build/) or plain HTML
+npx samey audit . --serve "npm run dev" --port 3000   # samey starts your dev server, audits, stops it
+npx samey audit --url https://your-site.com           # a deployed site
+npx samey audit . --url http://localhost:3000 --dev   # a dev server you already started
 ```
 
-The report is written to `<project>/.samey/report.html` (self-contained, open it in any browser) and `report.json`. Add `.samey/` to your `.gitignore`.
+Each run writes three files to `.samey/` (add it to your `.gitignore`):
 
-## What you get
+- `report.html`: the full report, self-contained, open it in any browser
+- `fix-prompt.md`: a ready-to-paste prompt for your coding agent
+- `report.json`: everything, for scripts and agents
 
-- A slop score from 0 to 100, where **lower is better**: 0 means no slop indicators were found. Plus a score per category: visual genericness, content genericness, functional defects, accessibility and usability, technical quality.
-- A "fix first" list ordered by severity and confidence. Each finding is marked as a verified defect (measured) or a design observation (a heuristic that needs your judgment).
-- Each finding with evidence: the page and viewport, CSS selector, a screenshot crop with the element outlined, the source line where the text or class lives, and a recommendation.
-- Desktop (1440px) and mobile (390px) screenshots of each audited page.
-- A "copy fix prompt" button on every finding, and a tray to combine selected findings into one prompt you can paste into your coding agent. Rerun samey afterwards to verify.
+## Fix it with your coding agent
+
+```bash
+npx samey prompt | pbcopy          # macOS; or open .samey/fix-prompt.md
+```
+
+Paste it into Claude Code, Cursor or Codex. The prompt lists measured defects first, then design observations to weigh, each with the page, selector, file and line, and the fix. It tells the agent to ask you for anything only you can provide, like real testimonials or a brand colour, instead of inventing it. Then run `npx samey audit` again to confirm.
+
+Prefer to pick? Tick findings in the HTML report and use "Copy fix prompt", or run `npx samey prompt --only-defects` to skip the design observations.
 
 ## Commands
 
 ```
-samey audit [path] [options]
-samey rules
+samey audit [path] [options]   audit a project, a URL, or both
+samey prompt [path]            print the fix prompt from the last audit
+samey setup                    install the browser samey uses
+samey rules                    list every rule
 ```
 
 | Option | Default | Description |
@@ -164,14 +194,9 @@ samey audit . --model qwen2.5vl:7b
 
 samey sends up to three desktop screenshots to the model and asks for specific visual observations. Only loopback endpoints are accepted, so screenshots never leave your machine. Model observations are marked advisory, given confidence 0.3, and never change the score. No model has been benchmarked with samey yet; the model name is recorded in the report. If no model is configured or the server is not running, the audit runs normally and the report notes it.
 
-## Using it with a coding agent
+## For coding agents
 
-1. Run `samey audit .`.
-2. Open the report, tick the findings you want fixed, and click "Copy fix prompt" (or point the agent at `.samey/report.json`).
-3. Paste into Claude Code, Cursor, or Codex.
-4. Run samey again to confirm the findings are gone.
-
-See [AGENTS.md](AGENTS.md) for the JSON shape an agent can rely on.
+`report.json` is designed to be read by agents directly. See [AGENTS.md](AGENTS.md) for its shape and a suggested fixing order.
 
 ## Limits
 

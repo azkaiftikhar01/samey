@@ -31,7 +31,7 @@ src/
     static.ts         source-tree rules, several mirroring rendered rules via mergeInto
     normalize.ts      validation, path safety, secret redaction, evidence collapsing, fingerprints, dedup
     index.ts          registry, source-location tracing, static-to-rendered merging
-  report/             html.ts (self-contained report), terminal.ts
+  report/             html.ts (self-contained report), prompt.ts (fix prompt), terminal.ts
   ai/local-model.ts   optional Ollama critique, loopback only, advisory
 test/                 vitest; e2e.test.ts audits the fixtures, security.test.ts covers SSRF
 fixtures/             sloppy-site, clean-site, react-app
@@ -59,7 +59,7 @@ fixtures/             sloppy-site, clean-site, react-app
 
 ## Fixing a site from an samey report
 
-Read `.samey/report.json`. The parts you need:
+The quickest start is `.samey/fix-prompt.md` (or `npx samey prompt`): the findings as a prompt, defects first. For structured data, read `.samey/report.json`. The parts you need:
 
 ```ts
 {
