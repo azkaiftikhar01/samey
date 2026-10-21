@@ -59,7 +59,7 @@ fixtures/             sloppy-site, clean-site, react-app
 
 ## Fixing a site from an samey report
 
-The quickest start is `.samey/fix-prompt.md` (or `npx samey prompt`): the findings as a prompt, defects first. For structured data, read `.samey/report.json`. The parts you need:
+The quickest start is `.samey/fix-prompt.md` (or `npx samey-cli prompt`): the findings as a prompt, defects first. For structured data, read `.samey/report.json`. The parts you need:
 
 ```ts
 {

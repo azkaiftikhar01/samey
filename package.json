@@ -1,5 +1,5 @@
 {
-  "name": "samey",
+  "name": "samey-cli",
   "version": "0.1.0",
   "description": "Find what makes your AI-built site look like every other one. A local CLI that audits rendered pages for stock patterns, broken behaviour, and accessibility gaps, with evidence and fix prompts.",
   "scripts": {

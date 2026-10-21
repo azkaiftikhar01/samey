@@ -23,9 +23,9 @@ export function fixPrompt(f: Finding): string {
 }
 
 function rerunCommand(report: AuditReport): string {
-  if (report.target.url && report.target.path) return `npx samey audit . --url ${report.target.url}`;
-  if (report.target.url) return `npx samey audit --url ${report.target.url}`;
-  return 'npx samey audit .';
+  if (report.target.url && report.target.path) return `npx samey-cli audit . --url ${report.target.url}`;
+  if (report.target.url) return `npx samey-cli audit --url ${report.target.url}`;
+  return 'npx samey-cli audit .';
 }
 
 /**

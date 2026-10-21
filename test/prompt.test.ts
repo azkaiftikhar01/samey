@@ -43,7 +43,7 @@ describe('fix prompt', () => {
   });
 
   it('ends with the right command to verify', () => {
-    expect(text.trim().endsWith('run `npx samey audit .` and confirm these findings are gone.')).toBe(true);
-    expect(fullPrompt(report([draft({})], { url: 'https://x.dev/' }))).toContain('npx samey audit --url https://x.dev/');
+    expect(text.trim().endsWith('run `npx samey-cli audit .` and confirm these findings are gone.')).toBe(true);
+    expect(fullPrompt(report([draft({})], { url: 'https://x.dev/' }))).toContain('npx samey-cli audit --url https://x.dev/');
   });
 });

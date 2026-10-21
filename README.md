@@ -3,8 +3,10 @@
 **Is your AI-built site samey?** samey audits a website built with Claude Code, Cursor, Codex or any other coding agent, shows you what makes it look like every other one, and writes a prompt your agent can use to fix it.
 
 ```bash
-npx samey audit .
+npx samey-cli audit .
 ```
+
+Or install it once with `npm i -g samey-cli` and run `samey audit .`.
 
 ![samey auditing a generic landing page, writing a fix prompt, and re-auditing the fixed site](docs/samey-demo.gif)
 
@@ -34,8 +36,8 @@ samey runs entirely on your machine: no account, no API key, no cloud. It measur
 The before site is a deliberately generic landing page. samey produced [this fix prompt](examples/novaflow/fix-prompt.md) for it, and the after site is that site rewritten from the prompt by a coding agent: one deliberate accent colour instead of the gradient, a product preview and a worked example instead of three-card grids, a pricing table, real links, and the invented testimonials and user counts removed rather than reworded. Run both yourself:
 
 ```bash
-npx samey audit examples/novaflow/before
-npx samey audit examples/novaflow/after
+npx samey-cli audit examples/novaflow/before
+npx samey-cli audit examples/novaflow/after
 ```
 
 A score of 0 means samey found nothing to flag, not that a site is perfect. It is a small demo site; real sites will rarely reach zero.
@@ -43,12 +45,12 @@ A score of 0 means samey found nothing to flag, not that a site is perfect. It i
 ## Quick start
 
 ```bash
-npx samey setup                    # once: downloads the Chromium build samey uses (about 150 MB)
+npx samey-cli setup                    # once: downloads the Chromium build samey uses (about 150 MB)
 
-npx samey audit .                  # a static build (out/, dist/, build/) or plain HTML
-npx samey audit . --serve "npm run dev" --port 3000   # samey starts your dev server, audits, stops it
-npx samey audit --url https://your-site.com           # a deployed site
-npx samey audit . --url http://localhost:3000 --dev   # a dev server you already started
+npx samey-cli audit .                  # a static build (out/, dist/, build/) or plain HTML
+npx samey-cli audit . --serve "npm run dev" --port 3000   # samey starts your dev server, audits, stops it
+npx samey-cli audit --url https://your-site.com           # a deployed site
+npx samey-cli audit . --url http://localhost:3000 --dev   # a dev server you already started
 ```
 
 Each run writes three files to `.samey/` (add it to your `.gitignore`):
@@ -60,17 +62,17 @@ Each run writes three files to `.samey/` (add it to your `.gitignore`):
 ## Fix it with your coding agent
 
 ```bash
-npx samey prompt | pbcopy          # macOS; or open .samey/fix-prompt.md
+npx samey-cli prompt | pbcopy          # macOS; or open .samey/fix-prompt.md
 ```
 
-Paste it into Claude Code, Cursor or Codex. The prompt lists measured defects first, then design observations to weigh, each with the page, selector, file and line, and the fix. It tells the agent to ask you for anything only you can provide, like real testimonials or a brand colour, instead of inventing it. Then run `npx samey audit` again to confirm.
+Paste it into Claude Code, Cursor or Codex. The prompt lists measured defects first, then design observations to weigh, each with the page, selector, file and line, and the fix. It tells the agent to ask you for anything only you can provide, like real testimonials or a brand colour, instead of inventing it. Then run `npx samey-cli audit` again to confirm.
 
-Prefer to pick? Tick findings in the HTML report and use "Copy fix prompt", or run `npx samey prompt --only-defects` to skip the design observations.
+Prefer to pick? Tick findings in the HTML report and use "Copy fix prompt", or run `npx samey-cli prompt --only-defects` to skip the design observations.
 
 ## Commands
 
 ```
-samey audit [path] [options]   audit a project, a URL, or both
+samey audit [path] [options]   audit a project, a URL, or both (npx samey-cli audit ...)
 samey prompt [path]            print the fix prompt from the last audit
 samey setup                    install the browser samey uses
 samey rules                    list every rule

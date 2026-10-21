@@ -3,7 +3,7 @@
 ## Unreleased
 
 ### Renamed
-- The project is now **samey** (was unslop): the npm name `unslop` belongs to an unrelated tool. The command, package, report branding, output folder (`.samey/`), and config file (`samey.config.json`) all changed.
+- The project is now **samey** (was unslop): the npm name `unslop` belongs to an unrelated tool. The command, report branding, output folder (`.samey/`), and config file (`samey.config.json`) all changed. The npm package is `samey-cli` (npm rejects `samey` as too similar to existing packages); the installed command is `samey`.
 
 ### Security
 - All browser requests are intercepted and performed by a Node client that validates the URL, resolves DNS, rejects names with any non-public address, and pins the connection to the validated address (DNS rebinding).

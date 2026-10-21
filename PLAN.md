@@ -40,7 +40,7 @@ Explicit non-goals for now: hosted dashboard, accounts, browser or editor extens
 
 ## Decisions
 
-- **Name.** samey. The brief called it SlopLint; it was built as unslop, then renamed because `unslop` on npm is an existing tool for AI-generated code anti-patterns, which would confuse search and word of mouth. `samey` was free on npm with no notable GitHub projects.
+- **Name.** samey. The brief called it SlopLint; it was built as unslop, then renamed because `unslop` on npm is an existing tool for AI-generated code anti-patterns, which would confuse search and word of mouth. npm then rejected the bare name `samey` as too similar to existing packages (sade, sane, save), so the package publishes as `samey-cli`; the command stays `samey`.
 - **The first brief was truncated** partway through section 4D, so the first slice was built from sections 1 to 4. Once the full brief arrived, the score direction, categories, finding schema, and security model were changed to match it.
 - **Node and npm.** Node 24, npm (no pnpm on the machine), ESM, `tsc` build, `tsx` for development, vitest.
 - **Dependencies kept small:** commander, picocolors, playwright. The browser is the parser for rendered facts; source checks are line-based.

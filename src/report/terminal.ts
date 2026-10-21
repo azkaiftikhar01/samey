@@ -68,7 +68,7 @@ export function summarize(report: AuditReport, files: { html?: string; json?: st
     const base = report.target.path ?? process.cwd();
     const fromCwd = path.relative(process.cwd(), base);
     const arg = dir !== path.join(base, '.samey') ? ` --out ${rel(dir)}` : !fromCwd ? '' : fromCwd.startsWith('..') ? ` ${base}` : ` ${fromCwd}`;
-    out.push(pc.dim(`          Paste it into Claude Code, Cursor or Codex, or copy it: npx samey prompt${arg}${process.platform === 'darwin' ? ' | pbcopy' : ''}`));
+    out.push(pc.dim(`          Paste it into Claude Code, Cursor or Codex, or copy it: npx samey-cli prompt${arg}${process.platform === 'darwin' ? ' | pbcopy' : ''}`));
   }
   out.push('');
   return out.join('\n');

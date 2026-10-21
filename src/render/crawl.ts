@@ -54,7 +54,7 @@ export async function launchBrowser(policy: NetworkPolicy): Promise<Browser> {
   } catch (err) {
     const msg = (err as Error).message;
     if (/Executable doesn't exist|browserType.launch/i.test(msg)) {
-      throw new BrowserMissingError('Chromium is not installed yet. Run `npx samey setup` once (about 150 MB), or use --static-only to skip rendered checks.');
+      throw new BrowserMissingError('Chromium is not installed yet. Run `npx samey-cli setup` once (about 150 MB), or use --static-only to skip rendered checks.');
     }
     throw err;
   }

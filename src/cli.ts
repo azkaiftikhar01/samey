@@ -129,7 +129,7 @@ program
     try {
       report = JSON.parse(readFileSync(file, 'utf8'));
     } catch {
-      console.error(pc.red(`  No report at ${file}. Run \`npx samey audit\` first.`));
+      console.error(pc.red(`  No report at ${file}. Run \`npx samey-cli audit\` first.`));
       process.exit(2);
     }
     const text = fullPrompt(report, { onlyDefects: !!o.onlyDefects });
