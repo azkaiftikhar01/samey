@@ -14,7 +14,7 @@ export function viewport(over: Partial<ViewportFacts> = {}): ViewportFacts {
     viewport: 'desktop', width: 1440, height: 900, docHeight: 3000, scrollWidth: 1440, lang: 'en', title: 'Page', metaDescription: 'desc',
     sections: [], headings: [{ selector: 'h1', rect, level: 1, text: 'Title' }], controls: [], links: [], images: [], textBlocks: [], gradients: [], glows: [],
     styles: { colors: {}, backgrounds: {}, fontSizes: {}, fontFamilies: {}, radii: {}, shadows: {}, spacing: {} },
-    smallTargets: [], tinyText: [], overflowing: [], unlabeledInputs: [], wordCount: 400, ...over,
+    smallTargets: [], tinyText: [], overflowing: [], unlabeledInputs: [], wordCount: 400, rootFontSize: 16, ...over,
   };
 }
 

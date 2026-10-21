@@ -2,6 +2,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { runRules } from '../src/rules/index.js';
 import { locateText, scanRepo } from '../src/static/scan.js';
+import { isSafeControl } from '../src/render/interact.js';
 
 const reactApp = path.resolve(__dirname, '../fixtures/react-app');
 
@@ -37,6 +38,12 @@ describe('repository scan', () => {
     const files = ['a', 'b', 'c'].map((n) => ({ path: `${n}.html`, ext: '.html', content: head(n) }));
     const repo = { root: '/x', frameworks: [], scripts: {}, files, fileCount: 3, truncated: false, routeHints: [] };
     expect(runRules({ repo }).findings.map((f) => f.ruleId)).not.toContain('duplicated-markup');
+  });
+
+  it('does not click a control that is already the selected choice', () => {
+    const base = { selector: 'button', rect: { x: 0, y: 0, width: 80, height: 32 }, tag: 'button', text: 'All', name: 'All', inForm: false };
+    expect(isSafeControl(base)).toBe(true);
+    expect(isSafeControl({ ...base, selected: true })).toBe(false);
   });
 
   it('serves a plain HTML project as-is', () => {

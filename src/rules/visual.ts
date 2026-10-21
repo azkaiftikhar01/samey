@@ -87,6 +87,7 @@ function contentSections(sections: SectionFact[]): SectionFact[] {
 
 export const cardGridSameness: Rule = {
   id: 'card-grid-sameness',
+  version: 2,
   title: 'The same card grid, over and over',
   category: 'visual',
   needs: 'rendered',
@@ -96,11 +97,13 @@ export const cardGridSameness: Rule = {
     const bySig = new Map<string, Evidence[]>();
     let cardSections = 0;
     let total = 0;
+    const cardEvidence: Evidence[] = [];
     for (const { page, facts } of pagesWith(crawl, 'desktop')) {
       for (const s of contentSections(facts.sections)) {
         total++;
         if (s.cardCount >= 3 && s.cardSignature) {
           cardSections++;
+          cardEvidence.push(el(page, 'desktop', s, s.heading ? truncate(s.heading, 80) : undefined, `${s.cardCount} cards`));
           const key = `${s.cardSignature}|${s.columns}`;
           if (!bySig.has(key)) bySig.set(key, []);
           bySig.get(key)!.push(el(page, 'desktop', s, s.heading ? truncate(s.heading, 80) : undefined, `${s.cardCount} cards in ${s.columns} columns`));
@@ -128,7 +131,8 @@ export const cardGridSameness: Rule = {
         confidence: 0.6,
         description: `${cardSections} of ${total} content sections are grids of three or more cards.`,
         recommendation: 'Break the rhythm with sections that use prose, a single image, a table, or a list where the content fits that better.',
-        evidence: [],
+        evidence: cardEvidence,
+        routes: uniqueRoutes(cardEvidence),
       });
     }
     return out;
@@ -316,6 +320,7 @@ export const centeredEverything: Rule = {
 
 export const emojiIcons: Rule = {
   id: 'emoji-icons',
+  version: 2,
   title: 'Emoji used as icons',
   category: 'visual',
   needs: 'rendered',
@@ -352,6 +357,7 @@ const px = (v: string) => parseFloat(v);
 
 export const tokenSprawl: Rule = {
   id: 'token-sprawl',
+  version: 2,
   title: 'Inconsistent design tokens',
   category: 'visual',
   needs: 'rendered',
@@ -369,13 +375,21 @@ export const tokenSprawl: Rule = {
     const out: FindingInput[] = [];
     const metric = (detail: string) => ({ type: 'metric' as const, detail });
 
-    const sizes = Object.keys(agg.fontSizes).sort((a, b) => px(a) - px(b));
-    if (sizes.length > 10) {
+    // Group sizes into type-scale steps: values within 8% of a step's first size (fluid clamp() output like
+    // 13px and 13.5px) are one step. Sizes used by a single element are ignored as one-offs.
+    const sizes = Object.keys(agg.fontSizes).filter((v) => agg.fontSizes[v] > 1).sort((a, b) => px(a) - px(b));
+    const steps: string[][] = [];
+    for (const v of sizes) {
+      const last = steps[steps.length - 1];
+      if (last && px(v) <= px(last[0]) * 1.08) last.push(v);
+      else steps.push([v]);
+    }
+    if (steps.length > 10) {
       out.push({
-        title: `${sizes.length} different font sizes`,
-        severity: sizes.length > 14 ? 'medium' : 'low',
+        title: `${steps.length} different text sizes`,
+        severity: steps.length > 14 ? 'medium' : 'low',
         confidence: 0.6,
-        description: `Text uses ${sizes.length} distinct font sizes (${sizes.join(', ')}). A type scale usually needs 6 to 8 steps; more than that blurs hierarchy.`,
+        description: `Text uses ${steps.length} distinct size steps (${steps.map((g) => g.join('/')).join(', ')}). A type scale usually needs 6 to 8 steps; more than that blurs hierarchy.`,
         recommendation: 'Define a type scale as tokens and map every text style to it. Collapse sizes within 1 to 2px of each other.',
         evidence: topEntries(agg.fontSizes, 12).map(([v, n]) => metric(`${v} used by ${n} elements`)),
       });
@@ -405,21 +419,27 @@ export const tokenSprawl: Rule = {
     let onGrid = 0;
     let offGrid = 0;
     const offValues: Record<string, number> = {};
+    // A value is on-scale if it sits on a 4px grid or on quarter-rem steps of the page's own root size.
+    const rem = pages[0].facts.rootFontSize || 16;
+    const onStep = (p: number, unit: number) => Math.abs(p / unit - Math.round(p / unit)) < 0.02;
     for (const [v, n] of Object.entries(agg.spacing)) {
       const p = px(v);
       if (p <= 2) continue;
-      if (Math.abs(p / 4 - Math.round(p / 4)) < 0.01) onGrid += n;
+      if (onStep(p, 4) || onStep(p, rem / 4)) onGrid += n;
       else {
         offGrid += n;
         offValues[v] = n;
       }
     }
-    if (onGrid + offGrid >= 30 && offGrid / (onGrid + offGrid) > 0.3) {
+    // A rem- or em-based system can sit off a 4px grid and still be consistent, so require many distinct
+    // values in regular use (3+ elements each) before calling the spacing unsystematic.
+    const distinctUsed = Object.entries(agg.spacing).filter(([v, n]) => px(v) > 2 && n >= 3).length;
+    if (onGrid + offGrid >= 30 && offGrid / (onGrid + offGrid) > 0.3 && distinctUsed > 12) {
       out.push({
         title: 'Spacing off a consistent scale',
         severity: 'low',
         confidence: 0.35,
-        description: `${Math.round((offGrid / (onGrid + offGrid)) * 100)}% of padding, margin, and gap values are not multiples of 4px.`,
+        description: `Padding, margin, and gap use ${distinctUsed} distinct values, and ${Math.round((offGrid / (onGrid + offGrid)) * 100)}% are neither multiples of 4px nor quarter steps of the ${rem}px root size.`,
         recommendation: 'Adopt a spacing scale (4px or 8px based) and replace one-off values with tokens.',
         evidence: topEntries(offValues, 8).map(([v, n]) => metric(`${v} used ${n} times`)),
       });

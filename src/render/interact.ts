@@ -7,6 +7,7 @@ const UNSAFE = /\b(?:delete|remove|destroy|erase|buy|pay|purchase|checkout|order
 
 export function isSafeControl(c: ControlFact): boolean {
   if (c.inForm) return false;
+  if (c.selected) return false; // clicking the current choice again is expected to do nothing
   if (c.type === 'submit' || c.type === 'reset') return false;
   if (c.tag === 'a') return false; // links are covered by the crawler and link checks
   if (c.href) return false;

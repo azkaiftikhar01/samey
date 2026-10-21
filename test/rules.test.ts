@@ -57,10 +57,27 @@ describe('visual rules', () => {
     expect(ids(two)).toContain('emoji-icons');
   });
 
-  it('flags too many font sizes but not a normal scale', () => {
-    const sizes = (n: number) => Object.fromEntries(Array.from({ length: n }, (_, i) => [`${12 + i}px`, 3]));
-    expect(ids(crawlOf([page('/', { styles: { ...viewport().styles, fontSizes: sizes(8) } })]))).not.toContain('token-sprawl');
-    expect(ids(crawlOf([page('/', { styles: { ...viewport().styles, fontSizes: sizes(16) } })]))).toContain('token-sprawl');
+  it('flags a sprawling set of text sizes but not a normal or fluid scale', () => {
+    const rec = (vals: number[]) => Object.fromEntries(vals.map((v) => [`${v}px`, 3]));
+    const styles = (fontSizes: Record<string, number>) => ({ ...viewport().styles, fontSizes });
+    const sprawl = Array.from({ length: 14 }, (_, i) => Math.round(10 * 1.12 ** i * 10) / 10);
+    expect(ids(crawlOf([page('/', { styles: styles(rec(sprawl)) })]))).toContain('token-sprawl');
+    expect(ids(crawlOf([page('/', { styles: styles(rec([12, 14, 16, 20, 24, 32, 40, 56])) })]))).not.toContain('token-sprawl');
+    // clamp() output: half-pixel neighbours belong to the same step.
+    const fluid = [12, 12.5, 13, 13.5, 14, 15, 15.5, 16, 17, 18, 19, 20, 22, 24];
+    expect(ids(crawlOf([page('/', { styles: styles(rec(fluid)) })]))).not.toContain('token-sprawl');
+  });
+
+  it('accepts a small consistent spacing set in any unit, flags many unsystematic values', () => {
+    const spacing = Object.fromEntries([6.8, 10.2, 17, 25.5, 34].map((v) => [`${v}px`, 20]));
+    const off = Object.fromEntries([5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31].map((v) => [`${v}px`, 20]));
+    expect(ids(crawlOf([page('/', { rootFontSize: 17, styles: { ...viewport().styles, spacing } })]))).not.toContain('token-sprawl');
+    expect(ids(crawlOf([page('/', { rootFontSize: 16, styles: { ...viewport().styles, spacing: off } })]))).toContain('token-sprawl');
+  });
+
+  it('does not count the copyright sign as an emoji icon', () => {
+    const blocks = ['© 2026 Example Ltd', '® Registered', 'Pricing ™'].map((text, i) => ({ selector: `p:nth-of-type(${i + 1})`, rect: r, tag: 'p', text }));
+    expect(ids(crawlOf([page('/', { textBlocks: blocks })]))).not.toContain('emoji-icons');
   });
 });
 

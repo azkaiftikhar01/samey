@@ -145,6 +145,7 @@ export const deadLinks: Rule = {
 
 export const unresponsiveButtons: Rule = {
   id: 'unresponsive-buttons',
+  version: 2,
   title: 'Buttons that do nothing',
   category: 'functional',
   needs: 'rendered',

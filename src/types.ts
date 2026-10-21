@@ -103,6 +103,8 @@ export interface ControlFact extends ElementRef {
   href?: string;
   type?: string;
   inForm: boolean;
+  /** Already the active choice (aria-pressed, aria-selected, aria-current, or an active class). */
+  selected?: boolean;
 }
 
 export interface LinkFact extends ElementRef {
@@ -158,6 +160,7 @@ export interface ViewportFacts {
   overflowing: (ElementRef & { right: number })[];
   unlabeledInputs: (ElementRef & { type: string })[];
   wordCount: number;
+  rootFontSize: number;
 }
 
 export interface InteractionResult extends ElementRef {

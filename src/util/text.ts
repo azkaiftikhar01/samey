@@ -93,13 +93,14 @@ export function findClaims(text: string): PhraseMatch[] {
 /** Testimonial attribution like "Sarah Chen, CEO at Nimbus". */
 export const ATTRIBUTION = /\b[A-Z][a-z]+ [A-Z][a-z]+\s*[,\-–—|]\s*(?:CEO|CTO|COO|CFO|Founder|Co-founder|Head of|VP|Director|Lead|Manager|Product Manager|Engineer|Designer)\b/;
 
-const EMOJI = /\p{Extended_Pictographic}/u;
+// Emoji presentation only: symbols such as © ® ™ are Extended_Pictographic but render as plain text.
+const EMOJI = /\p{Emoji_Presentation}|\p{Extended_Pictographic}\uFE0F/u;
 export function hasEmoji(text: string): boolean {
   return EMOJI.test(text);
 }
 
 export function firstEmoji(text: string): string | undefined {
-  return text.match(/\p{Extended_Pictographic}️?/u)?.[0];
+  return text.match(/\p{Emoji_Presentation}\uFE0F?|\p{Extended_Pictographic}\uFE0F/u)?.[0];
 }
 
 export const GENERIC_LINK_TEXT = /^(?:learn more|read more|click here|more|here|details|see more|find out more)$/i;

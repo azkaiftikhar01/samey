@@ -189,6 +189,11 @@ function extractInPage(opts: { viewport: ViewportName }): any {
       href: el.getAttribute('href') ?? undefined,
       type: el.getAttribute('type') ?? undefined,
       inForm: !!el.closest('form'),
+      selected:
+        el.getAttribute('aria-pressed') === 'true' ||
+        el.getAttribute('aria-selected') === 'true' ||
+        (el.hasAttribute('aria-current') && el.getAttribute('aria-current') !== 'false') ||
+        /(?:^|[\s_-])(?:active|selected|current)(?:$|[\s_-])/i.test(el.className.toString()),
     }));
 
   // Links
@@ -436,5 +441,6 @@ function extractInPage(opts: { viewport: ViewportName }): any {
     overflowing,
     unlabeledInputs,
     wordCount,
+    rootFontSize: parseFloat(getComputedStyle(document.documentElement).fontSize) || 16,
   };
 }
