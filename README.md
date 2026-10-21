@@ -1,6 +1,6 @@
 # samey
 
-[![npm](https://img.shields.io/npm/v/samey-cli)](https://www.npmjs.com/package/samey-cli) [![CI](https://github.com/azkaiftikhar01/samey/actions/workflows/ci.yml/badge.svg)](https://github.com/azkaiftikhar01/samey/actions/workflows/ci.yml) [![license](https://img.shields.io/github/license/azkaiftikhar01/samey)](LICENSE)
+[![npm](https://img.shields.io/npm/v/samey-cli)](https://www.npmjs.com/package/samey-cli) [![CI](https://github.com/azkaiftikhar01/samey/actions/workflows/ci.yml/badge.svg)](https://github.com/azkaiftikhar01/samey/actions/workflows/ci.yml) [![license](https://img.shields.io/github/license/azkaiftikhar01/samey)](https://github.com/azkaiftikhar01/samey/blob/main/LICENSE)
 
 **Is your AI-built site samey?** samey audits a website built with Claude Code, Cursor, Codex or any other coding agent, shows you what makes it look like every other one, and writes a prompt your agent can use to fix it.
 
@@ -10,7 +10,7 @@ npx samey-cli audit .
 
 Or install it once with `npm i -g samey-cli` and run `samey audit .`.
 
-![samey auditing a generic landing page, writing a fix prompt, and re-auditing the fixed site](docs/samey-demo.gif)
+![samey auditing a generic landing page, writing a fix prompt, and re-auditing the fixed site](https://raw.githubusercontent.com/azkaiftikhar01/samey/main/docs/samey-demo.gif)
 
 > **Early release.** The rules work and are tested, but the scoring weights have not been calibrated against human judgment yet. If samey flags something that looks fine to you, or misses something obvious, please [report it](https://github.com/azkaiftikhar01/samey/issues/new?template=false-positive.yml) with the URL or a screenshot. That feedback is exactly what will make it accurate.
 
@@ -31,14 +31,14 @@ samey runs entirely on your machine: no account, no API key, no cloud. It measur
 
 ## Before and after
 
-![The same NovaFlow landing page before and after fixing samey's findings](docs/before-after.jpg)
+![The same NovaFlow landing page before and after fixing samey's findings](https://raw.githubusercontent.com/azkaiftikhar01/samey/main/docs/before-after.jpg)
 
 | | Slop score | Findings |
 | --- | ---: | ---: |
-| [Before](examples/novaflow/before) | 57.3 | 33 |
-| [After](examples/novaflow/after) | 0 | 0 |
+| [Before](https://github.com/azkaiftikhar01/samey/tree/main/examples/novaflow/before) | 57.3 | 33 |
+| [After](https://github.com/azkaiftikhar01/samey/tree/main/examples/novaflow/after) | 0 | 0 |
 
-The before site is a deliberately generic landing page. samey produced [this fix prompt](examples/novaflow/fix-prompt.md) for it, and the after site is that site rewritten from the prompt by a coding agent: one deliberate accent colour instead of the gradient, a product preview and a worked example instead of three-card grids, a pricing table, real links, and the invented testimonials and user counts removed rather than reworded. Run both yourself:
+The before site is a deliberately generic landing page. samey produced [this fix prompt](https://github.com/azkaiftikhar01/samey/blob/main/examples/novaflow/fix-prompt.md) for it, and the after site is that site rewritten from the prompt by a coding agent: one deliberate accent colour instead of the gradient, a product preview and a worked example instead of three-card grids, a pricing table, real links, and the invented testimonials and user counts removed rather than reworded. Run both yourself:
 
 ```bash
 npx samey-cli audit examples/novaflow/before
@@ -231,7 +231,7 @@ samey sends up to three desktop screenshots to the model and asks for specific v
 
 ## For coding agents
 
-`report.json` is designed to be read by agents directly. See [AGENTS.md](AGENTS.md) for its shape and a suggested fixing order.
+`report.json` is designed to be read by agents directly. See [AGENTS.md](https://github.com/azkaiftikhar01/samey/blob/main/AGENTS.md) for its shape and a suggested fixing order.
 
 ## Limits
 
@@ -251,7 +251,7 @@ npm run typecheck
 npm run dev -- audit fixtures/sloppy-site   # run from source
 ```
 
-`fixtures/sloppy-site` is a deliberately generic multi-page site, `fixtures/clean-site` is a plain site that should produce no genericness findings, and `fixtures/react-app` is a source tree for static analysis. See [PLAN.md](PLAN.md) for status and next steps.
+`fixtures/sloppy-site` is a deliberately generic multi-page site, `fixtures/clean-site` is a plain site that should produce no genericness findings, and `fixtures/react-app` is a source tree for static analysis. See [PLAN.md](https://github.com/azkaiftikhar01/samey/blob/main/PLAN.md) for status and next steps.
 
 ## License
 
