@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { CATEGORY_LABELS, SCORING } from '../score.js';
 import type { AuditReport, Evidence, Finding, Severity } from '../types.js';
@@ -276,7 +277,10 @@ export function renderHtml(report: AuditReport, outDir: string): string {
   const f = report.findings;
   const scored = f.filter((x) => !x.advisory);
   const bySev = (s: Severity) => scored.filter((x) => x.severity === s).length;
-  const target = report.target.path ?? report.target.url ?? '';
+  // Show local paths relative to home so a shared report does not reveal the account name.
+  const home = os.homedir();
+  const local = report.target.path && home && report.target.path.startsWith(home) ? '~' + report.target.path.slice(home.length) : report.target.path;
+  const target = local ?? report.target.url ?? '';
   const prompts = Object.fromEntries(f.map((x) => [x.id, fixPrompt(x)]));
   const cov = report.coverage;
 

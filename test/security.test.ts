@@ -7,6 +7,8 @@ import path from 'node:path';
 import { chromium } from 'playwright';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { runAudit, AuditError } from '../src/audit.js';
+import { crawl, launchBrowser } from '../src/render/crawl.js';
+import { DEFAULT_LIMITS } from '../src/render/network.js';
 import { DEFAULTS } from '../src/config.js';
 import { guardedFetch, TooLargeError } from '../src/security/fetch.js';
 import { checkUrlSyntax, classifyIp, DEV_POLICY, REMOTE_POLICY, resolveTarget, type NetworkPolicy } from '../src/security/net-policy.js';
@@ -120,10 +122,26 @@ const PAGE = (p: number) => `<!doctype html><html lang="en"><head><title>Adversa
 <script>fetch('http://[::1]:${p}/secret-fetch').catch(()=>{}); new WebSocket('ws://[::1]:${p}/ws');</script>
 </main></body></html>`;
 
+const APEX_HOME = `<!doctype html><html lang="en"><head><title>Apex</title></head><body><main><h1>Apex home</h1>
+<a href="/moved">Moved page</a>
+<img src="/img-redirect" alt="redirected image"><img src="/img-escape" alt="escape"><video src="/huge.bin"></video>
+</main></body></html>`;
+
 beforeAll(async () => {
   server = http.createServer((req, res) => {
     const local = (req.socket as Socket).localAddress ?? '';
     if (req.url?.startsWith('/secret') || req.url === '/ws') escapes.push(`${local} ${req.url}`);
+    const host = (req.headers.host ?? '').split(':')[0];
+    if (host === 'apex.test') return res.writeHead(301, { location: `http://www.apex.test:${port}${req.url}` }).end();
+    if (host === 'www.apex.test') {
+      if (req.url === '/') return res.writeHead(200, { 'content-type': 'text/html' }).end(APEX_HOME);
+      if (req.url === '/moved') return res.writeHead(302, { location: '/landing' }).end();
+      if (req.url === '/landing') return res.writeHead(200, { 'content-type': 'text/html' }).end('<!doctype html><html lang="en"><head><title>Landing</title></head><body><main><h1>Landing</h1><p>Reached through a redirect.</p></main></body></html>');
+      if (req.url === '/img-redirect') return res.writeHead(302, { location: '/pixel.svg' }).end();
+      if (req.url === '/pixel.svg') return res.writeHead(200, { 'content-type': 'image/svg+xml' }).end('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"/>');
+      if (req.url === '/img-escape') return res.writeHead(302, { location: `http://[::1]:${port}/secret-img` }).end();
+      if (req.url === '/huge.bin') return res.writeHead(200, { 'content-type': 'video/mp4' }).end(Buffer.alloc(2 * 1024 * 1024));
+    }
     if (req.url === '/') return res.writeHead(200, { 'content-type': 'text/html' }).end(PAGE(port));
     if (req.url === '/ok') return res.writeHead(200, { 'content-type': 'text/plain' }).end('ok');
     if (req.url === '/go') return res.writeHead(302, { location: `http://[::1]:${port}/secret-redirect` }).end();
@@ -144,7 +162,7 @@ afterAll(() => new Promise<void>((r) => server.close(() => r())));
 const testPolicy = (): NetworkPolicy => ({
   allowLoopback: false,
   allowPrivate: false,
-  resolver: async (h) => (h === 'site.test' ? [{ address: '127.0.0.1', family: 4 }] : [{ address: '::1', family: 6 }]),
+  resolver: async (h) => (h === 'site.test' || h.endsWith('apex.test') ? [{ address: '127.0.0.1', family: 4 }] : [{ address: '::1', family: 6 }]),
   classify: (ip) => (ip === '127.0.0.1' ? 'public' : classifyIp(ip)),
 });
 const opts = () => ({ policy: testPolicy(), maxBytes: 1024 * 1024, timeoutMs: 5000 });
@@ -184,6 +202,37 @@ describe.skipIf(!hasBrowser)('browser crawl under the remote policy', () => {
     expect(reasons).toMatch(/169\.254\.169\.254/);
     // The page's text is treated as content, never as instructions.
     expect(report.findings.some((f) => /perfect/i.test(f.title))).toBe(false);
+  });
+});
+
+describe.skipIf(!hasBrowser)('redirects in the browser', () => {
+  const out = mkdtempSync(path.join(os.tmpdir(), 'unslop-redir-'));
+  afterAll(() => rmSync(out, { recursive: true, force: true }));
+
+  it('adopts the start URL redirect, follows page and image redirects, and still blocks bad hops', async () => {
+    escapes.length = 0;
+    const { report } = await runAudit({ ...DEFAULTS, url: `http://apex.test:${port}/`, outDir: out, ai: false, interact: false, policyOverride: testPolicy() });
+    expect(report.pages.map((p) => p.url)).toEqual(expect.arrayContaining([`http://www.apex.test:${port}/`, `http://www.apex.test:${port}/landing`]));
+    expect(report.pages.every((p) => !p.error)).toBe(true);
+    expect(report.findings.map((f) => f.ruleId)).not.toContain('page-load-failed');
+    expect(escapes).toEqual([]);
+    expect(report.coverage.blockedRequests.some((b) => /\[::1\]|loopback/.test(`${b.url} ${b.reason}`))).toBe(true);
+  });
+
+  it('does not report requests the guard blocked as failures of the site', async () => {
+    const browser = await launchBrowser(testPolicy());
+    try {
+      const result = await crawl(browser, {
+        startUrl: `http://www.apex.test:${port}/`, maxRoutes: 1, navTimeoutMs: 10_000, pageTimeoutMs: 10_000, seeds: [], interact: false, respectRobots: false,
+        policy: testPolicy(), limits: { ...DEFAULT_LIMITS, maxResponseBytes: 1024 * 1024 },
+      });
+      const home = result.pages[0];
+      expect(result.network.blocked.some((b) => b.url.includes('/huge.bin') && /byte limit/.test(b.reason))).toBe(true);
+      expect(home.failedRequests.map((r) => r.url).join(' ')).not.toMatch(/huge\.bin|img-escape/);
+      expect(home.consoleErrors.join(' ')).not.toMatch(/ERR_FAILED|ERR_BLOCKED_BY_CLIENT/);
+    } finally {
+      await browser.close();
+    }
   });
 });
 

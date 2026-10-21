@@ -79,7 +79,7 @@ export async function runAudit(opts: AuditOptions): Promise<AuditResult> {
 
   let repo: RepoFacts | undefined;
   if (opts.path) {
-    log(`Scanning ${opts.path}`);
+    log(`Scanning ${path.relative(process.cwd(), opts.path) || '.'}`);
     repo = scanRepo(opts.path);
     coverage.staticAnalysis = true;
     log(`Found ${repo.fileCount} source files${repo.frameworks.length ? ` (${repo.frameworks.join(', ')})` : ''}${repo.truncated ? ', file limit reached' : ''}`);

@@ -1,12 +1,12 @@
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type { Browser, BrowserContext, Page } from 'playwright';
-import { guardedFetch } from '../security/fetch.js';
-import { displayUrl, type NetworkPolicy } from '../security/net-policy.js';
+import { guardedFetch, guardedRequest } from '../security/fetch.js';
+import { BlockedError, checkUrlSyntax, displayUrl, type NetworkPolicy } from '../security/net-policy.js';
 import type { CrawlResult, PageFacts, ViewportFacts, ViewportName } from '../types.js';
 import { extractViewportFacts } from './extract.js';
 import { testInteractions } from './interact.js';
-import { DEFAULT_LIMITS, guardContext, newNetworkLog, type NetworkLimits } from './network.js';
+import { DEFAULT_LIMITS, guardContext, newNetworkLog, type NetworkLimits, type NetworkLog } from './network.js';
 import { isAllowed, parseRobots, type RobotsRules } from './robots.js';
 
 export interface CrawlOptions {
@@ -114,9 +114,12 @@ interface Listeners {
   failedRequests: PageFacts['failedRequests'];
 }
 
-function attach(page: Page, origin: string, sink: Listeners): void {
+function attach(page: Page, origin: string, sink: Listeners, network: NetworkLog): void {
   page.on('console', (msg) => {
-    if (msg.type() === 'error' && sink.consoleErrors.length < 30) sink.consoleErrors.push(msg.text().slice(0, 300));
+    if (msg.type() !== 'error' || sink.consoleErrors.length >= 30) return;
+    // "Failed to load resource" for a request the guard blocked is not a site error.
+    if (network.blockedUrls.has(msg.location()?.url ?? '')) return;
+    sink.consoleErrors.push(msg.text().slice(0, 300));
   });
   page.on('pageerror', (err) => {
     if (sink.consoleErrors.length < 30) sink.consoleErrors.push(`Uncaught: ${err.message.slice(0, 280)}`);
@@ -131,10 +134,37 @@ function attach(page: Page, origin: string, sink: Listeners): void {
     }
   });
   page.on('requestfailed', (req) => {
+    if (network.blockedUrls.has(req.url())) return;
     const failure = req.failure()?.errorText ?? 'failed';
     if (/ERR_ABORTED|cancelled/i.test(failure)) return;
     if (sink.failedRequests.length < 40) sink.failedRequests.push({ url: req.url(), failure, resourceType: req.resourceType() });
   });
+}
+
+/**
+ * page.goto that follows redirects the network guard intercepted. Each target is checked
+ * against the policy before navigating; the guard validates its DNS on the next request.
+ */
+async function gotoGuarded(page: Page, url: string, opts: CrawlOptions, network: NetworkLog) {
+  let current = url;
+  for (let hop = 0; hop <= 5; hop++) {
+    network.navRedirects.delete(current);
+    try {
+      return await page.goto(current, { waitUntil: 'load', timeout: opts.navTimeoutMs });
+    } catch (err) {
+      const next = network.navRedirects.get(current);
+      if (!next) throw err;
+      network.navRedirects.delete(current);
+      try {
+        checkUrlSyntax(next, opts.policy);
+      } catch (e) {
+        if (network.blocked.length < 200) network.blocked.push({ url: displayUrl(next), reason: (e as Error).message });
+        throw new Error(`redirect to ${displayUrl(next)} was blocked: ${(e as Error).message}`);
+      }
+      current = next;
+    }
+  }
+  throw new Error(`more than 5 redirects starting at ${displayUrl(url)}`);
 }
 
 async function auditViewport(
@@ -144,14 +174,16 @@ async function auditViewport(
   opts: CrawlOptions,
   sink: Listeners,
   shotFile: string | undefined,
+  origin: string,
+  network: NetworkLog,
 ): Promise<{ facts?: ViewportFacts; status: number | null; error?: string; finalUrl: string; contentType?: string; page: Page }> {
   const page = await context.newPage();
   page.setDefaultTimeout(opts.pageTimeoutMs);
-  attach(page, new URL(opts.startUrl).origin, sink);
+  attach(page, origin, sink, network);
   let status: number | null = null;
   let contentType: string | undefined;
   try {
-    const res = await page.goto(url, { waitUntil: 'load', timeout: opts.navTimeoutMs });
+    const res = await gotoGuarded(page, url, opts, network);
     status = res?.status() ?? null;
     contentType = res?.headers()['content-type'];
     if (contentType && !/html/i.test(contentType)) return { status, finalUrl: page.url(), contentType, page };
@@ -173,8 +205,6 @@ async function auditViewport(
 }
 
 export async function crawl(browser: Browser, opts: CrawlOptions): Promise<CrawlResult> {
-  const start = new URL(opts.startUrl);
-  const origin = start.origin;
   if (opts.shotsDir) mkdirSync(opts.shotsDir, { recursive: true });
 
   const common = { reducedMotion: 'reduce' as const, acceptDownloads: false, serviceWorkers: 'block' as const };
@@ -195,7 +225,17 @@ export async function crawl(browser: Browser, opts: CrawlOptions): Promise<Crawl
   await guardContext(mobile, opts.policy, limits, network);
   const fetchOpts = { policy: opts.policy, maxBytes: 2 * 1024 * 1024, timeoutMs: Math.min(opts.navTimeoutMs, 10_000), headers: { 'user-agent': 'unslop' } };
 
-  const result: CrawlResult = { baseUrl: opts.startUrl, pages: [], skipped: [], brokenLinks: [], discovered: 0, limitHit: false, network };
+  // If the start URL redirects (example.com to www.example.com, http to https), crawl the site it lands on.
+  let startUrl = opts.startUrl;
+  for (let hop = 0; hop < 5; hop++) {
+    const r = await guardedRequest(startUrl, { ...fetchOpts, method: 'GET' }).catch((e: Error) => e);
+    if (r instanceof BlockedError) throw r;
+    if (r instanceof Error || r.status < 300 || r.status >= 400 || !r.headers['location']) break;
+    startUrl = new URL(String(r.headers['location']), startUrl).href;
+  }
+  const origin = new URL(startUrl).origin;
+
+  const result: CrawlResult = { baseUrl: startUrl, pages: [], skipped: [], brokenLinks: [], discovered: 0, limitHit: false, network };
 
   let robots: RobotsRules = { allow: [], disallow: [] };
   if (opts.respectRobots) {
@@ -215,12 +255,12 @@ export async function crawl(browser: Browser, opts: CrawlOptions): Promise<Crawl
     queue.push(u);
   };
 
-  enqueue(normalizeLink(opts.startUrl, opts.startUrl));
-  for (const s of opts.seeds) enqueue(normalizeLink(s, opts.startUrl), '(route hint)');
+  enqueue(normalizeLink(startUrl, startUrl));
+  for (const s of opts.seeds) enqueue(normalizeLink(s, startUrl), '(route hint)');
   const sitemap = await guardedFetch(origin + '/sitemap.xml', fetchOpts).catch(() => null);
   if (sitemap && sitemap.status === 200 && /xml/i.test(String(sitemap.headers['content-type'] ?? ''))) {
     const xml = sitemap.body.toString('utf8');
-    for (const m of xml.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/g)) enqueue(normalizeLink(m[1], opts.startUrl), '(sitemap)');
+    for (const m of xml.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/g)) enqueue(normalizeLink(m[1], startUrl), '(sitemap)');
   }
 
   const crawled = new Set<string>();
@@ -236,7 +276,7 @@ export async function crawl(browser: Browser, opts: CrawlOptions): Promise<Crawl
     const begin = Date.now();
     const shot = (vp: ViewportName) => (opts.shotsDir ? path.join(opts.shotsDir, `${String(result.pages.length + 1).padStart(2, '0')}-${slug(u.pathname)}-${vp}.jpg`) : undefined);
 
-    const d = await auditViewport(desktop, u.href, 'desktop', opts, sink, shot('desktop'));
+    const d = await auditViewport(desktop, u.href, 'desktop', opts, sink, shot('desktop'), origin, network);
     if (d.contentType && !/html/i.test(d.contentType)) {
       result.skipped.push({ url: u.href, reason: `not an HTML page (${d.contentType.split(';')[0]})` });
       await d.page.close();
@@ -248,10 +288,20 @@ export async function crawl(browser: Browser, opts: CrawlOptions): Promise<Crawl
       await d.page.close();
       continue;
     }
+    // Record the page where navigation landed; a second link redirecting to it is not audited twice.
+    const landedKey = urlKey(landed);
+    if (landedKey !== key && crawled.has(landedKey)) {
+      result.skipped.push({ url: u.href, reason: `redirects to ${landed.pathname}, already audited` });
+      await d.page.close();
+      continue;
+    }
     crawled.add(key);
+    crawled.add(landedKey);
+    seen.add(landedKey);
+    const pageUrl = landed.protocol.startsWith('http') ? landed : u;
     const facts: PageFacts = {
-      url: u.href,
-      path: u.pathname,
+      url: pageUrl.href,
+      path: pageUrl.pathname,
       status: d.status,
       loadMs: 0,
       error: d.error,
@@ -261,8 +311,6 @@ export async function crawl(browser: Browser, opts: CrawlOptions): Promise<Crawl
       desktop: (d.status ?? 200) < 400 ? d.facts : undefined,
       interactions: [],
     };
-    const finalUrl = new URL(d.finalUrl || u.href);
-    if (urlKey(finalUrl) !== key) crawled.add(urlKey(finalUrl));
 
     if (d.facts) {
       for (const link of d.facts.links) if (link.internal) enqueue(normalizeLink(link.href, d.finalUrl || u.href), u.pathname);
@@ -274,7 +322,7 @@ export async function crawl(browser: Browser, opts: CrawlOptions): Promise<Crawl
     facts.loadMs = Date.now() - begin;
 
     if (!d.error && (d.status ?? 200) < 400) {
-      const m = await auditViewport(mobile, u.href, 'mobile', opts, sink, shot('mobile'));
+      const m = await auditViewport(mobile, u.href, 'mobile', opts, sink, shot('mobile'), origin, network);
       facts.mobile = m.facts;
       if (m.error && !facts.error) facts.error = `mobile: ${m.error}`;
       await m.page.close();

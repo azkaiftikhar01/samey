@@ -186,7 +186,7 @@ export interface CrawlResult {
   brokenLinks: { from: string; url: string; status: number | null; error?: string }[];
   discovered: number;
   limitHit: boolean;
-  network: { blocked: { url: string; reason: string }[]; requests: number; bytes: number; budgetExceeded: boolean };
+  network: { blocked: { url: string; reason: string }[]; requests: number; bytes: number; budgetExceeded: boolean; navRedirects?: Map<string, string> };
 }
 
 // ---------------------------------------------------------------------------
