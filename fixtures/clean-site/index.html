@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ledgerline: bookkeeping for small bakeries</title>
+<meta name="description" content="Ledgerline reconciles bakery point-of-sale exports with your bank feed every night.">
+<style>
+  :root { --ink: #1f2320; --muted: #5b625d; --line: #d9dcd6; --accent: #2f6b4f; --bg: #fbfaf6; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.6 Georgia, serif; color: var(--ink); background: var(--bg); }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+  header { border-bottom: 1px solid var(--line); }
+  header .wrap { display: flex; justify-content: space-between; align-items: center; padding-top: 16px; padding-bottom: 16px; }
+  header a { color: var(--ink); margin-left: 24px; padding: 8px 0; display: inline-block; }
+  h1 { font-size: 44px; line-height: 1.1; margin: 64px 0 16px; max-width: 18ch; }
+  h2 { font-size: 28px; margin: 0 0 12px; }
+  p { margin: 0 0 16px; max-width: 60ch; }
+  .lead { font-size: 20px; color: var(--muted); }
+  .cta { display: inline-block; background: var(--accent); color: #fff; padding: 12px 20px; border-radius: 4px; text-decoration: none; }
+  section { padding: 48px 0; border-bottom: 1px solid var(--line); }
+  figure { margin: 24px 0 0; }
+  figure img { width: 100%; max-width: 720px; height: auto; border: 1px solid var(--line); }
+  figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; }
+  table { border-collapse: collapse; width: 100%; max-width: 640px; }
+  th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line); }
+  form { display: flex; gap: 8px; flex-wrap: wrap; align-items: end; }
+  label { display: block; font-size: 14px; color: var(--muted); }
+  input { font: inherit; padding: 8px 12px; border: 1px solid var(--line); border-radius: 4px; }
+  footer { padding: 32px 0; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<header><div class="wrap"><strong>Ledgerline</strong><nav><a href="/pricing">Pricing</a><a href="/about">About</a></nav></div></header>
+<main class="wrap">
+  <h1>Bookkeeping for bakeries that close at 3pm</h1>
+  <p class="lead">Ledgerline reconciles your Square or Toast exports with your bank feed every night, and flags the three or four entries a person needs to look at.</p>
+  <a class="cta" href="/pricing">See pricing</a>
+  <section>
+    <h2>What a morning looks like</h2>
+    <p>At 6am you get one email: yesterday's sales, deposits that matched, and anything that did not. Most days the list is empty. When it is not, each item links to the transaction and the receipt.</p>
+    <figure><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='720' height='300'%3E%3Crect width='720' height='300' fill='%23eceee8'/%3E%3C/svg%3E" alt="Sample morning summary email listing two unmatched deposits" width="720" height="300"><figcaption>The summary email from a customer in Leeds, with names removed.</figcaption></figure>
+  </section>
+  <section>
+    <h2>Pricing</h2>
+    <table>
+      <tr><th>Locations</th><th>Monthly</th></tr>
+      <tr><td>One shop</td><td>£24</td></tr>
+      <tr><td>Two to five</td><td>£19 per shop</td></tr>
+    </table>
+  </section>
+  <section>
+    <h2>Get the sample report</h2>
+    <form action="/sample" method="post"><div><label for="email">Work email</label><input id="email" name="email" type="email"></div><button class="cta" type="submit">Email it to me</button></form>
+  </section>
+</main>
+<footer><div class="wrap">Ledgerline Ltd, registered in England, company 09876543.</div></footer>
+</body>
+</html>

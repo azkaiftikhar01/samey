@@ -1,0 +1,61 @@
+{
+  "name": "unslop",
+  "version": "0.1.0",
+  "description": "Lint your AI-built UI. Local-first website quality audits that find generic, broken, and unfinished patterns.",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsx src/cli.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/azkaiftikhar01/unslop.git"
+  },
+  "keywords": [
+    "lint",
+    "ui",
+    "design",
+    "audit",
+    "playwright",
+    "ai",
+    "accessibility"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/azkaiftikhar01/unslop/issues"
+  },
+  "homepage": "https://github.com/azkaiftikhar01/unslop#readme",
+  "dependencies": {
+    "commander": "^15.0.0",
+    "picocolors": "^1.1.1",
+    "playwright": "^1.64.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  },
+  "bin": {
+    "unslop": "dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  }
+}
