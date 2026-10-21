@@ -107,7 +107,8 @@ export function normalizeFindings(drafts: DraftFinding[], knownFiles?: Set<strin
       description: redact(d.description),
       evidence: evidence.slice(0, MAX_EVIDENCE),
       fingerprint: fp,
-      id: `${d.ruleId}-${fp.slice(0, 8)}`,
+      // ids double as HTML ids and URL fragments, so keep them to letters, digits, and dashes.
+      id: `${d.ruleId.replace(/[^a-z0-9-]+/gi, '-')}-${fp.slice(0, 8)}`,
     });
   }
   return [...byFp.values()];

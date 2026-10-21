@@ -1,6 +1,6 @@
 # Notes for coding agents
 
-Two audiences: agents working on samey itself, and agents fixing a site using an samey report.
+Two audiences: agents working on samey itself, and agents fixing a site using a samey report.
 
 ## Working on samey
 
@@ -22,12 +22,18 @@ src/
     crawl.ts          Playwright crawl: two viewports, console and network capture, link checks
     network.ts        serves every browser request through security/fetch.ts; blocks websockets, popups
     extract.ts        the in-browser fact extractor
+    extract-extra.ts  in-browser performance, SEO, and best-practice facts (+ a perf observer init script)
+    axe.ts            runs axe-core inside the page (no network, CSP-safe)
     interact.ts       safe button clicking
     robots.ts         robots.txt rules
   rules/
     visual.ts         genericness and design-token rules (rendered)
     content.ts        copy, credibility, link-text rules (rendered)
-    functional.ts     broken behaviour, responsive, accessibility rules (rendered)
+    functional.ts     broken behaviour and responsive rules, plus fallback accessibility checks
+    accessibility.ts  axe-core violations as findings (ruleId axe/<check>)
+    performance.ts    page weight, JS, images, CLS, blocking time, render-blocking, DOM, compression, caching
+    seo.ts            titles, descriptions, noindex, canonical, social, JSON-LD, viewport, robots/sitemap
+    practices.ts      HTTPS, mixed content, quirks mode, charset, image aspect, outdated libraries, favicon
     static.ts         source-tree rules, several mirroring rendered rules via mergeInto
     normalize.ts      validation, path safety, secret redaction, evidence collapsing, fingerprints, dedup
     index.ts          registry, source-location tracing, static-to-rendered merging
@@ -53,11 +59,12 @@ fixtures/             sloppy-site, clean-site, react-app
 - **Verified or observation.** Each rule declares `verified: true` (a measured defect) or `false` (a design observation). Rules about popular conventions get a lower `penalty`.
 - **All network access goes through `security/`.** Never call `fetch`, `page.request`, or `context.request` directly on audited URLs; use `guardedFetch`. Any change to the network path needs a test in `security.test.ts`, and the adversarial test must fail if the guard is loosened.
 - **Bump `version`** on a rule when its logic changes its findings, and `SCORING.version` when the scoring config changes.
+- **Never report what the guard distorts.** Every request is proxied through Node, so load timings are wrong; report bytes, counts, layout shift, and CPU blocking instead. Checks that depend on production hosting (compression, caching, HTTPS, robots.txt) skip local targets via `isLocalCrawl`.
 - **No remote inference.** Model calls go only to loopback endpoints and never affect the score.
 - **No code execution without consent.** Project scripts run only via `--serve` on the command line.
 - Keep `README.md` and `PLAN.md` accurate when behaviour changes.
 
-## Fixing a site from an samey report
+## Fixing a site from a samey report
 
 The quickest start is `.samey/fix-prompt.md` (or `npx samey-cli prompt`): the findings as a prompt, defects first. For structured data, read `.samey/report.json`. The parts you need:
 
@@ -73,10 +80,10 @@ The quickest start is `.samey/fix-prompt.md` (or `npx samey-cli prompt`): the fi
   findings: Array<{
     id: string,                         // `${ruleId}-${fingerprint prefix}`, stable across runs for the same evidence
     fingerprint: string,
-    ruleId: string,                     // see `samey rules`
+    ruleId: string,                     // see `samey rules`; axe checks are `axe/<id>`
     ruleVersion: number,
     title: string,
-    category: 'visual' | 'content' | 'functional' | 'accessibility' | 'technical',
+    category: 'visual' | 'content' | 'functional' | 'accessibility' | 'performance' | 'seo' | 'practices',
     severity: 'critical' | 'high' | 'medium' | 'low' | 'info',
     confidence: number,                 // 0 to 1
     verified: boolean,                  // true = measured defect, false = design observation

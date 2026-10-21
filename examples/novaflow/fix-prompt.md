@@ -1,5 +1,12 @@
 Fix the following UI issues reported by samey. Make focused changes, keep unrelated code as is, and re-run samey afterwards to verify.
 
+Stack: Static HTML
+Current slop score: 57.3/100 (lower is better)
+
+Work through the list in order. Each item names the page, the CSS selector, and the source file and line when samey could trace it. Where a fix needs content only a person can provide (real testimonials, real numbers, a brand colour), ask instead of inventing it.
+
+## Defects (measured, fix these)
+
 1. [placeholder-content] Placeholder content shipped
 Found 5 pieces of placeholder content. Visitors notice this immediately and it signals the site is unfinished. Source locations: 9 matching lines in the repository.
 Evidence:
@@ -39,11 +46,11 @@ Fix: Find the listed elements and constrain them: max-width: 100%, flex-wrap, mi
 4. [failed-requests] Failed asset requests
 5 requests failed while loading pages, 1 of them scripts, styles, or documents.
 Evidence:
-- route /, "http://127.0.0.1:49945/missing-theme.css", stylesheet: HTTP 404
-- route /, "http://127.0.0.1:49945/logo-a.png", image: HTTP 404
-- route /, "http://127.0.0.1:49945/logo-b.png", image: HTTP 404
-- route /, "http://127.0.0.1:49945/logo-d.png", image: HTTP 404
-- route /, "http://127.0.0.1:49945/missing-hero.png", image: HTTP 404
+- route /, "http://127.0.0.1:62889/missing-theme.css", stylesheet: HTTP 404
+- route /, "http://127.0.0.1:62889/logo-a.png", image: HTTP 404
+- route /, "http://127.0.0.1:62889/logo-b.png", image: HTTP 404
+- route /, "http://127.0.0.1:62889/logo-d.png", image: HTTP 404
+- route /, "http://127.0.0.1:62889/missing-hero.png", image: HTTP 404
 Fix: Fix the asset paths or remove references to files that do not exist.
 
 5. [console-errors] JavaScript errors in the console
@@ -53,19 +60,37 @@ Evidence:
 - route /, "Uncaught: Cannot read properties of null (reading 'classList')"
 Fix: Open the browser console on each listed page and fix the errors; uncaught exceptions often mean a feature silently does not work.
 
-6. [empty-controls] Buttons and links without an accessible name
-1 interactive element have no accessible name. Screen readers announce them as just "button" or "link". Icon-only buttons are the usual cause.
+6. [axe/button-name] Buttons must have discernible text
+Ensure buttons have discernible text axe found 1 element on 1 page (WCAG 4.1.2).
 Evidence:
-- route / (desktop), selector `nav > div > button`, "<button>"
-Fix: Add an aria-label to icon-only buttons and links, or include visually hidden text.
+- route / (desktop), selector `.icon-btn`, "<button class="icon-btn"></button>", Element does not have inner text that is visible to screen readers
+Fix: Buttons must have discernible text. The detail on each item says exactly what to change. Reference: https://dequeuniversity.com/rules/axe/4.14/button-name?application=axeAPI
 
 7. [broken-internal-links] Broken internal links
 1 internal link lead to pages that do not load.
 Evidence:
-- route /, "http://127.0.0.1:49945/careers", HTTP 404
+- route /, "http://127.0.0.1:62889/careers", HTTP 404
 Fix: Fix the target route or update the link. Remove navigation entries for pages that do not exist yet.
 
-8. [duplicate-copy] Repeated paragraphs
+8. [axe/image-alt] Images must have alternative text
+Ensure <img> elements have alternative text or a role of none or presentation axe found 1 element on 1 page (WCAG 1.1.1).
+Evidence:
+- route / (desktop), selector `img[src$="logo-b.png"]`, "<img src="/logo-b.png">", Element does not have an alt attribute
+Fix: Images must have alternative text. The detail on each item says exactly what to change. Reference: https://dequeuniversity.com/rules/axe/4.14/image-alt?application=axeAPI
+
+9. [seo-description] Pages without a meta description
+3 pages have no meta description, so search engines pick a random snippet from the page.
+Evidence:
+- route /, also on /about, /features, no meta description
+Fix: Add <meta name="description"> with one or two sentences saying what the page offers and for whom.
+
+10. [seo-title] Duplicate page titles
+3 pages share a title with another page, so search engines cannot tell them apart.
+Evidence:
+- route /, also on /about, /features, shares the title "NovaFlow" with 2 other pages
+Fix: Write a distinct title per page that says what that page is about.
+
+11. [duplicate-copy] Repeated paragraphs
 7 paragraphs appear more than once across the site. Repeated copy suggests sections were duplicated rather than written.
 Evidence:
 - route / (desktop), index.html:26, selector `section:nth-of-type(2) > div > div:nth-of-type(1) > p`, "Blazing fast performance that scales effortlessly with your business needs."
@@ -80,35 +105,90 @@ Evidence:
 - route /features (desktop), features.html:22, selector `section:nth-of-type(1) > div > div:nth-of-type(3) > p`, "We help over 50,000+ customers in 120 countries achieve more every day."
 Fix: Write copy specific to each place it appears, or remove the duplicate.
 
-9. [small-touch-targets] Touch targets too small
-11 controls are smaller than 24x24px on mobile (WCAG 2.5.8 minimum).
-Evidence:
-- route / (mobile), selector `nav > div > a:nth-of-type(1)`, "Features", 56x17px
-- route / (mobile), selector `nav > div > a:nth-of-type(2)`, "About", 39x17px
-- route / (mobile), selector `nav > div > a:nth-of-type(3)`, "Careers", 50x17px
-- route / (mobile), selector `nav > div > a:nth-of-type(4)`, "Blog", 29x17px
-- route / (mobile), selector `nav > div > button`, 18x18px
-- route /about (mobile), also on /features, selector `nav > div > a:nth-of-type(1)`, "Home", 38x17px
-- route /about (mobile), also on /features, selector `nav > div > a:nth-of-type(2)`, "Features", 56x17px
-- route /about (mobile), also on /features, selector `nav > div > a:nth-of-type(3)`, "About", 39x17px
-Fix: Increase padding on small controls so the tappable area is at least 24px, ideally 44px.
-
-10. [broken-images] Broken images
+12. [broken-images] Broken images
 4 images failed to load.
 Evidence:
-- route / (desktop), selector `section:nth-of-type(1) > div > img:nth-of-type(1)`, "http://127.0.0.1:49945/logo-a.png"
-- route / (desktop), selector `section:nth-of-type(1) > div > img:nth-of-type(2)`, "http://127.0.0.1:49945/logo-b.png"
-- route / (desktop), selector `section:nth-of-type(1) > div > img:nth-of-type(4)`, "http://127.0.0.1:49945/logo-d.png"
-- route / (desktop), selector `img`, "http://127.0.0.1:49945/missing-hero.png"
+- route / (desktop), selector `section:nth-of-type(1) > div > img:nth-of-type(1)`, "http://127.0.0.1:62889/logo-a.png"
+- route / (desktop), selector `section:nth-of-type(1) > div > img:nth-of-type(2)`, "http://127.0.0.1:62889/logo-b.png"
+- route / (desktop), selector `section:nth-of-type(1) > div > img:nth-of-type(4)`, "http://127.0.0.1:62889/logo-d.png"
+- route / (desktop), selector `img`, "http://127.0.0.1:62889/missing-hero.png"
 Fix: Fix the image paths or remove the images.
 
-11. [missing-alt] Images without alt text
-1 image have no alt attribute.
+13. [axe/color-contrast] Elements must meet minimum color contrast ratio thresholds
+Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds axe found 3 elements on 3 pages (WCAG 1.4.3).
 Evidence:
-- route / (desktop), selector `section:nth-of-type(1) > div > img:nth-of-type(2)`, "http://127.0.0.1:49945/logo-b.png"
-Fix: Describe informative images in alt text; use alt="" for purely decorative ones.
+- route / (desktop), selector `footer`, "<footer>© 2026 Your Company. Contact john.doe@example.com <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Twitter</a></footer>", Element has insufficient color contrast of 4.05 (foreground color: #6b7280, background color: #0b0b14, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1
+- route /about (desktop), also on /features, selector `footer`, "<footer>© 2026 Your Company. <a href="#">Privacy</a><a href="#">Terms</a></footer>", Element has insufficient color contrast of 4.05 (foreground color: #6b7280, background color: #0b0b14, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1
+Fix: Elements must meet minimum color contrast ratio thresholds. The detail on each item says exactly what to change. Reference: https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=axeAPI
 
-12. [glow-effects] Decorative glows, blur blobs, and glass panels (design observation, use judgment)
+14. [axe/target-size] All touch targets must be 24px large, or leave sufficient space
+Ensure touch targets have sufficient size and space axe found 2 elements on 1 page (WCAG 2.5.8).
+Evidence:
+- route / (desktop), selector `div > a[href="#"]`, "<a href="#">Blog</a>", Target has insufficient size (29px by 17px, should be at least 24px by 24px)
+- route / (desktop), selector `.icon-btn`, "<button class="icon-btn"></button>", Target has insufficient size (18px by 18px, should be at least 24px by 24px)
+Fix: All touch targets must be 24px large, or leave sufficient space. The detail on each item says exactly what to change. Reference: https://dequeuniversity.com/rules/axe/4.14/target-size?application=axeAPI
+
+15. [axe/html-has-lang] <html> element must have a lang attribute
+Ensure every HTML document has a lang attribute axe found 3 elements on 3 pages (WCAG 3.1.1).
+Evidence:
+- route / (desktop), also on /about, /features, selector `html`, "<html>", The <html> element does not have a lang attribute
+Fix: <html> element must have a lang attribute. The detail on each item says exactly what to change. Reference: https://dequeuniversity.com/rules/axe/4.14/html-has-lang?application=axeAPI
+
+16. [axe/region] All page content should be contained by landmarks
+Ensure all page content is contained by landmarks axe found 14 elements on 3 pages (best practice).
+Evidence:
+- route / (desktop), selector `section:nth-child(3)`, "<section>
+  <h2>Trusted by 10,000+ teams worldwide</h2>
+  <div class="logos"><img src="/logo-a.png" alt="Logo"><img src="/logo-b.png"><img src="https://via.placeholder.com/120x40" alt=""><img src="/logo-d.png" alt="Logo"></div>
+</section>", Some page content is not contained by landmarks
+- route / (desktop), also on /about, /features, selector `section:nth-child(4)`, "<section>", Some page content is not contained by landmarks
+- route / (desktop), selector `section:nth-child(5)`, "<section>", Some page content is not contained by landmarks
+- route / (desktop), selector `section:nth-child(6)`, "<section>", Some page content is not contained by landmarks
+- route / (desktop), selector `section:nth-child(7)`, "<section>", Some page content is not contained by landmarks
+- route / (desktop), selector `section:nth-child(8) > h2`, "<h2>Frequently Asked Questions</h2>", Some page content is not contained by landmarks
+- route / (desktop), selector `section:nth-child(9) > h2`, "<h2>Ready to transform your workflow?</h2>", Some page content is not contained by landmarks
+- route / (desktop), selector `img[src$="missing-hero.png"]`, "<img src="/missing-hero.png" alt="Hero">", Some page content is not contained by landmarks
+- route /about (desktop), also on /features, selector `section:nth-child(3)`, "<section>", Some page content is not contained by landmarks
+- route /about (desktop), also on /features, selector `section:nth-child(5) > h2`, "<h2>Ready to get started?</h2>", Some page content is not contained by landmarks
+Fix: All page content should be contained by landmarks. The detail on each item says exactly what to change. Reference: https://dequeuniversity.com/rules/axe/4.14/region?application=axeAPI
+
+17. [tiny-text] Text too small to read on mobile
+10 text elements are smaller than 12px on mobile.
+Evidence:
+- route / (mobile), selector `footer`, "© 2026 Your Company. Contact john.doe@example.com", 11px
+- route / (mobile), also on /about, /features, selector `footer > a:nth-of-type(1)`, "Privacy", 11px
+- route / (mobile), also on /about, /features, selector `footer > a:nth-of-type(2)`, "Terms", 11px
+- route / (mobile), selector `footer > a:nth-of-type(3)`, "Twitter", 11px
+- route /about (mobile), also on /features, selector `footer`, "© 2026 Your Company.", 11px
+Fix: Keep body text at 16px and secondary text at 13 to 14px or larger on small screens.
+
+18. [axe/landmark-one-main] Document should have one main landmark
+Ensure the document has a main landmark axe found 3 elements on 3 pages (best practice).
+Evidence:
+- route / (desktop), also on /about, /features, selector `html`, "<html>", Document does not have a main landmark
+Fix: Document should have one main landmark. The detail on each item says exactly what to change. Reference: https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=axeAPI
+
+19. [generic-link-text] Vague link and button labels
+3 links use labels like "Learn more" that do not say where they go. Screen reader users navigating by links hear a list of identical labels.
+Evidence:
+- route / (desktop), also on /about, /features, selector `header > a:nth-of-type(2)`, "Learn More"
+Fix: Name the destination: "Read the pricing FAQ", "See how imports work".
+
+20. [seo-social] No link preview for social and chat apps
+3 pages have no Open Graph image or title. Links shared on Slack, LinkedIn, X, or WhatsApp show a bare URL instead of a preview card.
+Evidence:
+- route /, also on /about, /features, missing og:title, og:image, twitter:card
+Fix: Add og:title, og:description, og:image (1200x630), and twitter:card="summary_large_image" in the page head.
+
+21. [seo-title] Titles too short or too long
+3 titles fall outside 10 to 60 characters; long ones are cut off in search results.
+Evidence:
+- route /, also on /about, /features, "NovaFlow" is 8 characters
+Fix: Keep titles between roughly 10 and 60 characters, with the important words first.
+
+## Design observations (heuristics, use judgment)
+
+22. [glow-effects] Decorative glows, blur blobs, and glass panels (design observation, use judgment)
 Found 33 colored glow shadows, 3 blurred background blobs, 24 glass panels. Layered glows and glass are decoration the content does not ask for, and they flatten hierarchy because everything shines equally.
 Evidence:
 - route / (desktop), also on /about, /features, selector `header > div`, "filter: blur(80px); background: rgb(168, 85, 247)", blurred decorative blob
@@ -123,7 +203,7 @@ Evidence:
 - route / (desktop), selector `section:nth-of-type(3) > div > div:nth-of-type(1)`, "rgba(99, 102, 241, 0.35) 0px 0px 30px 0px", colored glow shadow
 Fix: Remove decorative blobs and glow shadows. Use elevation sparingly and with neutral shadows; keep at most one deliberate accent effect per page.
 
-13. [emoji-icons] Emoji used as icons (design observation, use judgment)
+23. [emoji-icons] Emoji used as icons (design observation, use judgment)
 9 heading, button, or labels use emoji as decoration or icons. Emoji render differently on every platform, cannot be styled to the brand, and are a strong signal of generated UI. Source locations: 9 matching lines in the repository.
 Evidence:
 - route / (desktop), index.html:26, selector `section:nth-of-type(2) > div > div:nth-of-type(1) > h3`, "🚀 Lightning Fast", emoji 🚀
@@ -138,7 +218,7 @@ Evidence:
 - features.html:21, "<div class="card"><h3>🤝 Trust</h3><p>Enterprise-grade security that keeps your data safe and sound at all times.</p></div>", emoji 🤝
 Fix: Replace emoji with a consistent SVG icon set (one stroke width, one size scale) or drop the icon entirely where the label is clear.
 
-14. [stock-gradient] Stock blue-violet-pink gradients (design observation, use judgment)
+24. [stock-gradient] Stock blue-violet-pink gradients (design observation, use judgment)
 Found the blue-violet-pink gradient on 6 elements, 3 as gradient text, 3 covering a large area. It is the most recognizable default of AI-generated UIs and makes the site read as a template. Source locations: 2 matching lines in the repository.
 Evidence:
 - route / (desktop), also on /about, /features, selector `header`, "linear-gradient(135deg, rgb(99, 102, 241) 0%, rgb(168, 85, 247) 50%, rgb(236, 72, 153) 100%)", large background
@@ -147,7 +227,7 @@ Evidence:
 - styles.css:6, ".hero h1 { font-size: 64px; margin: 0 auto 20px; max-width: 900px; background: linear-gradient(90deg, #c084fc, #f472b6); -webkit-background-clip: text; backgro…", css gradient
 Fix: Pick a palette from the brand rather than the framework default: one primary hue used with intent, gradients only where they carry meaning. Replace gradient headline text with solid color and weight contrast.
 
-15. [stock-copy] Interchangeable marketing copy (design observation, use judgment)
+25. [stock-copy] Interchangeable marketing copy (design observation, use judgment)
 14 text blocks lean on stock phrases ("seamless", "lightning/blazing fast", "transform your", "world-class", "revolutionize", "unlock the power/potential"), 5 of them in headings. Copy like this could be pasted onto any product and says nothing about this one. Source locations: 18 matching lines in the repository.
 Evidence:
 - route / (desktop), index.html:15, selector `header > p`, "Supercharge your productivity with our next-generation, all-…", "supercharge", "next-generation", "all-in-one", "built for the future", "the future of"
@@ -162,7 +242,7 @@ Evidence:
 - route / (desktop), index.html:62, selector `section:nth-of-type(7) > h2`, "Ready to transform your workflow?", "transform your"
 Fix: Rewrite headings to state what the product does, for whom, and the concrete result. Replace adjectives with specifics: numbers you can back up, named features, a real example.
 
-16. [card-grid-sameness] The same card grid, over and over (design observation, use judgment)
+26. [card-grid-sameness] The same card grid, over and over (design observation, use judgment)
 6 sections use an identical card layout (same structure and column count). Repeating one composition makes every section feel like the previous one.
 Evidence:
 - route / (desktop), selector `section:nth-of-type(2)`, "Why choose NovaFlow?", 3 cards in 3 columns
@@ -171,14 +251,14 @@ Evidence:
 - route /about (desktop), also on /features, selector `section:nth-of-type(2)`, "Why teams love us", 3 cards in 3 columns
 Fix: Vary the form to fit the content: a comparison table for plans, a single large example for the main feature, a list for secondary points. Keep cards for content that is genuinely a set of peers.
 
-17. [unresponsive-buttons] Buttons that do nothing (design observation, use judgment)
+27. [unresponsive-buttons] Buttons that do nothing (design observation, use judgment)
 3 buttons produced no visible change when clicked (no navigation, no DOM update). Hover-only or CSS-only effects can cause false positives, so confirm by hand.
 Evidence:
 - route / (desktop), selector `section:nth-of-type(7) > button`, "Start your journey"
 - route /about (desktop), also on /features, selector `section:nth-of-type(3) > button`, "Start your journey"
 Fix: Wire the button to its action, or remove it. If it is a placeholder for a future feature, hide it until the feature exists.
 
-18. [unverified-claims] Unsupported credibility claims (design observation, use judgment)
+28. [unverified-claims] Unsupported credibility claims (design observation, use judgment)
 5 claims such as user counts, ratings, or percentages appear without a visible source. If these are real, they are fine; generated sites often invent them.
 Evidence:
 - route / (desktop), index.html:19, selector `section:nth-of-type(1) > h2`, "Trusted by 10,000+ teams worldwide", N+ users/customers
@@ -188,31 +268,7 @@ Evidence:
 - route /about (desktop), about.html:30, selector `section:nth-of-type(2) > div > div:nth-of-type(3) > p`, "99.9% uptime guaranteed with our world-class infrastructure…", percentage claim
 Fix: Keep only numbers you can substantiate, and link or footnote the source. Remove invented social proof before launch.
 
-19. [tiny-text] Text too small to read on mobile
-10 text elements are smaller than 12px on mobile.
-Evidence:
-- route / (mobile), selector `footer`, "© 2026 Your Company. Contact john.doe@example.com", 11px
-- route / (mobile), also on /about, /features, selector `footer > a:nth-of-type(1)`, "Privacy", 11px
-- route / (mobile), also on /about, /features, selector `footer > a:nth-of-type(2)`, "Terms", 11px
-- route / (mobile), selector `footer > a:nth-of-type(3)`, "Twitter", 11px
-- route /about (mobile), also on /features, selector `footer`, "© 2026 Your Company.", 11px
-Fix: Keep body text at 16px and secondary text at 13 to 14px or larger on small screens.
-
-20. [generic-link-text] Vague link and button labels
-3 links use labels like "Learn more" that do not say where they go. Screen reader users navigating by links hear a list of identical labels.
-Evidence:
-- route / (desktop), also on /about, /features, selector `header > a:nth-of-type(2)`, "Learn More"
-Fix: Name the destination: "Read the pricing FAQ", "See how imports work".
-
-21. [missing-metadata] Missing page metadata
-7 metadata gaps across 3 pages.
-Evidence:
-- route /, also on /about, /features, no meta description
-- route /, also on /about, /features, no lang attribute on <html>
-- route /, 3 pages share the title "NovaFlow"
-Fix: Give each page a unique title and description, and set <html lang>.
-
-22. [centered-everything] Everything is centered (design observation, use judgment)
+29. [centered-everything] Everything is centered (design observation, use judgment)
 16 of 16 section headings are centered. Symmetric, centered stacks everywhere remove the reading line and make hierarchy depend only on size.
 Evidence:
 - route / (desktop), selector `header`, "Unlock the Power of Seamless AI Workflows"
@@ -225,7 +281,7 @@ Evidence:
 - route / (desktop), selector `section:nth-of-type(7)`, "Ready to transform your workflow?"
 Fix: Left-align long-form and feature content; reserve centering for one or two moments such as the hero or a closing call to action.
 
-23. [stock-landing-sequence] Stock SaaS landing page sequence (design observation, use judgment)
+30. [stock-landing-sequence] Stock SaaS landing page sequence (design observation, use judgment)
 The home page follows the stock sequence: hero → logos → features → testimonials → pricing → faq → cta. Using familiar sections is fine on its own; combined with stock visuals it makes the page interchangeable with thousands of others.
 Evidence:
 - route / (desktop), selector `header`, "hero: Unlock the Power of Seamless AI Workflows"
@@ -237,7 +293,7 @@ Evidence:
 - route / (desktop), selector `section:nth-of-type(7)`, "cta: Ready to transform your workflow?"
 Fix: Lead with what is specific: a real product screenshot or demo, a concrete use case, or an opinion. Cut sections that exist only because the template has them.
 
-24. [duplicated-markup] Copy-pasted component markup (design observation, use judgment)
+31. [duplicated-markup] Copy-pasted component markup (design observation, use judgment)
 2 blocks of markup (5+ lines) are repeated with the same structure across files. Copy-pasted sections drift apart over time and make the design inconsistent.
 Evidence:
 - about.html:19, "<div class="grid">", block repeated 4 times
@@ -248,7 +304,7 @@ Evidence:
 - index.html:26, "<div class="card"><h3></h3><p></p></div>", block repeated 3 times
 Fix: Extract the repeated block into a component and render it from data.
 
-25. [cross-page-template] Different pages, same template (design observation, use judgment)
+32. [cross-page-template] Different pages, same template (design observation, use judgment)
 Across 3 distinct page types, 67% of section structure is shared on average. Pages with different purposes are built from the same blocks in a similar order.
 Evidence:
 - route /about, /about vs /features: 100% shared structure
@@ -256,8 +312,10 @@ Evidence:
 - route /, / vs /features: 50% shared structure
 Fix: Design each page around its own task: an about page tells a story, a pricing page compares, a docs page navigates. Reuse components, not whole page skeletons.
 
-26. [anonymous-testimonials] Testimonials without verifiable attribution (design observation, use judgment)
+33. [anonymous-testimonials] Testimonials without verifiable attribution (design observation, use judgment)
 1 testimonial section attribute quotes to a name and job title with no photo, company link, or source. Readers increasingly assume these are invented.
 Evidence:
 - route / (desktop), selector `section:nth-of-type(4)`, "Sarah Johnson, CEO", quote with name and title only
 Fix: Use real testimonials with permission, a photo or company logo, and a link where possible. If you have none yet, remove the section.
+
+When you are done, run `npx samey-cli audit .` and confirm these findings are gone.

@@ -18,7 +18,10 @@ Or install it once with `npm i -g samey-cli` and run `samey audit .`.
 - **Sameness:** the same three-card grid in every section, the hero-logos-features-testimonials-pricing-FAQ sequence, different pages built from one skeleton.
 - **Template copy:** "Unlock the power of seamless...", lorem ipsum, Jane Doe at Acme, unsourced "Trusted by 10,000+ teams".
 - **Things that are simply broken:** links to `#`, buttons that do nothing, broken links and images, console errors, pages that scroll sideways on a phone.
-- **Accessibility gaps:** buttons without names, images without alt text, unlabeled inputs, tiny touch targets.
+- **Accessibility:** the full [axe-core](https://github.com/dequelabs/axe-core) rule set (WCAG 2.0 to 2.2 A and AA plus best practices): colour contrast, missing names and labels, ARIA errors, landmarks, touch target size.
+- **Performance:** page weight, JavaScript size, oversized and old-format images, a lazy-loaded main image, layout shift, main-thread blocking, render-blocking scripts, DOM size, compression, caching.
+- **SEO:** missing or duplicate titles and descriptions, accidental noindex, canonical problems, missing social previews, broken structured data, no viewport tag, robots.txt and sitemap.
+- **Best practices:** HTTPS and mixed content, quirks mode, stretched images, outdated jQuery or Lodash.
 
 Every finding has evidence you can check: the page and viewport, the CSS selector, a screenshot crop with the element outlined, and the source file and line when samey can trace it. Measured defects are kept separate from design observations, which are heuristics that need your judgment. Popular conventions are not penalized on their own.
 
@@ -30,7 +33,7 @@ samey runs entirely on your machine: no account, no API key, no cloud. It measur
 
 | | Slop score | Findings |
 | --- | ---: | ---: |
-| [Before](examples/novaflow/before) | 53.3 | 26 |
+| [Before](examples/novaflow/before) | 57.3 | 33 |
 | [After](examples/novaflow/after) | 0 | 0 |
 
 The before site is a deliberately generic landing page. samey produced [this fix prompt](examples/novaflow/fix-prompt.md) for it, and the after site is that site rewritten from the prompt by a coding agent: one deliberate accent colour instead of the gradient, a product preview and a worked example instead of three-card grids, a pricing table, real links, and the invented testimonials and user counts removed rather than reworded. Run both yourself:
@@ -41,6 +44,25 @@ npx samey-cli audit examples/novaflow/after
 ```
 
 A score of 0 means samey found nothing to flag, not that a site is perfect. It is a small demo site; real sites will rarely reach zero.
+
+## How it compares
+
+Lighthouse and [Unlighthouse](https://unlighthouse.dev) are excellent for performance and SEO, and samey does not try to replace their timing lab. It checks what they do not, in one local run:
+
+| | samey | Unlighthouse |
+| --- | --- | --- |
+| One command, whole site | Yes (pages audited in parallel) | Yes |
+| Generic "AI look" and cross-page sameness | Yes | No |
+| Buttons that do nothing, links to `#`, safe click testing | Yes | Partly |
+| Accessibility | axe-core, same engine as Lighthouse | axe-core |
+| Performance | Page weight, JS, images, layout shift, blocking time, caching | Full Lighthouse, including load timings |
+| SEO and best practices | Yes | Yes |
+| Evidence with screenshot crops and `file:line` | Yes | Screenshots |
+| Ready-made fix prompt for your coding agent | Yes | No |
+| Network sandbox for untrusted URLs | Yes | No |
+| Maturity | New | Established |
+
+samey does not report load-time metrics (LCP, FCP, Speed Index). Every request goes through its network guard, which would make those numbers wrong, so it reports only what it can measure accurately. Use Lighthouse alongside it if you need lab timings.
 
 ## Quick start
 
@@ -84,7 +106,8 @@ samey rules                    list every rule
 | `--dev` | | Development mode: lets `--url` point at localhost or a private network address. |
 | `--serve [command]` | | Start the dev server with this command (`npm run dev` if omitted). This runs project code, so it only happens when you pass the flag. |
 | `--port <port>` | 4173 | Port the dev server listens on. `PORT` is set in its environment. |
-| `--max-routes <n>` | 10 | Maximum pages to render. Skipped pages are listed in the report. |
+| `--max-routes <n>` | 20 | Maximum pages to render. Skipped pages are listed in the report. |
+| `--concurrency <n>` | 3 | Pages audited at the same time. |
 | `--timeout <seconds>` | 30 | Navigation timeout per page. |
 | `--route <path...>` | | Extra routes to audit. |
 | `--format <html\|json\|both>` | both | Which reports to write. `--report` is an alias. |
@@ -131,17 +154,23 @@ Routes are discovered from links, `sitemap.xml`, `--route`, and route files in t
 
 ## What it checks
 
-Run `samey rules` for the full list. In summary:
+Run `npx samey-cli rules` for the full list. In summary:
 
 **Visual genericness**: blue-violet-pink gradients (including gradient text), decorative glows, blur blobs and glass panels, one card composition reused across sections, consecutive sections with identical layout, different pages built from the same skeleton, the stock hero-logos-features-testimonials-pricing-FAQ-CTA sequence, centered everything, emoji used as icons.
 
 **Copy and credibility**: stock marketing phrases ("unlock the power", "seamless", "next-generation"), placeholder content (lorem ipsum, Jane Doe, Acme, example.com, placeholder image services), repeated paragraphs, unsourced user counts and ratings, testimonials with only a name and title.
 
-**Functionality**: pages that fail to load, broken internal links, console errors, failed requests, links to `#`, buttons that do nothing when clicked, broken images, missing titles and descriptions.
+**Functionality**: pages that fail to load, broken internal links, console errors, failed requests, links to `#`, buttons that do nothing or throw when clicked, broken images, horizontal scrolling.
 
-**Responsive and accessibility**: horizontal scrolling, touch targets under 24px, text under 12px on mobile, controls without accessible names, images without alt, unlabeled inputs, heading structure, vague link text.
+**Accessibility (axe-core)**: about 100 checks from WCAG 2.0 to 2.2 A and AA and axe's best practices, including colour contrast, names for buttons and links, form labels, alt text, ARIA validity, heading order, landmarks, and touch target size on mobile. samey adds text under 12px on mobile and vague link text. If axe cannot run on a page, samey's own simpler checks cover it and the report says so.
 
-**Design consistency**: too many font sizes, radii, shadows, or font families; spacing off a 4px scale; hard-coded values bypassing tokens; markup copy-pasted instead of extracted into components.
+**Performance**: pages over 3 MB, more than 1 MB of JavaScript, images far larger than displayed or large JPEG/PNG that should be WebP or AVIF, a lazy-loaded main image, layout shift (CLS) over 0.1, more than 300 ms of main-thread blocking, synchronous scripts in `<head>`, DOMs over 1,500 elements, and on deployed sites uncompressed text files and static files cached for less than a day.
+
+**SEO**: missing, duplicate, or badly sized titles and descriptions, noindex on public pages, conflicting or cross-domain canonical links, missing Open Graph previews, invalid JSON-LD, no viewport tag, `<a>` without href, and on deployed sites a robots.txt that blocks everything or a missing sitemap.
+
+**Best practices**: plain HTTP and mixed content, quirks mode, no declared charset, stretched or squashed images, jQuery before 3.5, Lodash before 4.17.21, AngularJS, Moment.js, and no favicon.
+
+**Design consistency**: too many text-size steps, radii, shadows, or font families; many unsystematic spacing values; hard-coded values bypassing tokens; markup copy-pasted instead of extracted into components.
 
 Static checks on the source tree mirror several rendered checks. When both fire, the source lines are attached to the rendered finding as evidence instead of being reported twice.
 
@@ -167,7 +196,9 @@ Within a category the penalties add up to `P`, and the category score is `100 ×
 | Content genericness | 20% |
 | Functional defects | 15% |
 | Accessibility and usability | 15% |
-| Technical quality | 10% |
+| Performance | 5% |
+| SEO | 3% |
+| Best practices | 2% |
 
 Categories that could not be measured (for example functional defects in a static-only run) are shown as "not measured" and left out, with the remaining weights renormalized. Identical evidence on several pages, such as a broken link in a shared footer, counts once. The same set of findings always produces the same score. Weights and penalties are starting hypotheses, versioned in the report (`versions.scoring`), and have not yet been calibrated against human judgments, so there are deliberately no labels like "good" or "bad".
 
@@ -202,8 +233,8 @@ samey sends up to three desktop screenshots to the model and asks for specific v
 
 ## Limits
 
-- Ten routes and two viewports by default. Large sites are sampled, not exhausted.
-- Accessibility checks are samey's own, not axe-core yet, and technical quality covers page metadata only (no Lighthouse yet). See PLAN.md.
+- Twenty routes and two viewports by default (raise with `--max-routes`). Large sites are sampled, not exhausted.
+- No load-time metrics (see How it compares). Performance checks run on the desktop render; mobile CPU is slower than what samey measures.
 - Heuristics are tuned to avoid false positives on plain, well-built pages, but they are heuristics. Low-confidence findings are worth a look, not an automatic fix.
 - Single-page apps that render routes without real URLs only get their first screen audited.
 - samey never modifies your source files.

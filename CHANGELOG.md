@@ -1,6 +1,29 @@
 # Changelog
 
-## Unreleased
+## 0.2.0
+
+### Added
+- Accessibility runs axe-core (WCAG 2.0 to 2.2 A and AA, best practices) inside the guarded browser: colour contrast, names, labels, ARIA, landmarks, target size. Findings are `axe/<check>` with selectors, crops, and the failing HTML.
+- Performance category: page weight, JavaScript size, oversized and old-format images, lazy-loaded main image, CLS, main-thread blocking, render-blocking scripts, DOM size, and on deployed sites compression and caching. No load timings (the network guard would distort them).
+- SEO category: titles and descriptions, noindex, canonical, Open Graph previews, JSON-LD validity, viewport, links without href, robots.txt and sitemap.
+- Best-practices category: HTTPS and mixed content, quirks mode, charset, distorted images, outdated jQuery/Lodash/AngularJS/Moment, favicon.
+- Pages are audited in parallel (`--concurrency`, default 3); default route limit raised to 20.
+- README section comparing samey with Unlighthouse.
+
+### Changed
+- Scoring v3: seven categories; the brief's 10% technical share is split into performance 5%, SEO 3%, best practices 2%. `missing-metadata` is replaced by the SEO title and description rules and axe's lang check.
+- Finding ids contain only letters, digits, and dashes.
+
+### Fixed (found by auditing real sites)
+- Emoji check counted ©, ®, ™ as emoji.
+- Click testing flagged already-selected controls (active filters, current thumbnails).
+- Type-scale check counted clamp() half-pixel sizes separately; spacing check flagged consistent rem scales.
+- 'Most sections are card grids' had no evidence.
+- Next.js `nomodule` polyfills reported as render-blocking; one shared script counted once per page.
+- Canonical links to the production domain flagged when auditing a local server.
+
+## 0.1.0 (first npm release as samey-cli)
+
 
 ### Renamed
 - The project is now **samey** (was unslop): the npm name `unslop` belongs to an unrelated tool. The command, report branding, output folder (`.samey/`), and config file (`samey.config.json`) all changed. The npm package is `samey-cli` (npm rejects `samey` as too similar to existing packages); the installed command is `samey`.

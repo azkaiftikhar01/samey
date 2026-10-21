@@ -49,7 +49,7 @@ export const axeRule: Rule = {
         // Best-practice rules are useful but not WCAG failures, so they weigh one step less.
         severity: best && IMPACT[v.impact] === 'high' ? 'medium' : best ? 'low' : (IMPACT[v.impact] ?? 'low'),
         confidence: 0.9,
-        description: `${v.description} axe found ${plural(total, 'element')} on ${plural(uniqueRoutes(ev).length, 'page')}${wcag.length ? ` (WCAG ${wcag.join(', ')})` : best ? ' (best practice)' : ''}.`,
+        description: `${v.description.replace(/\.?\s*$/, '.')} axe found ${plural(total, 'element')} on ${plural(uniqueRoutes(ev).length, 'page')}${wcag.length ? ` (WCAG ${wcag.join(', ')})` : best ? ' (best practice)' : ''}.`,
         recommendation: `${v.help}. The detail on each item says exactly what to change. Reference: ${v.helpUrl}`,
         evidence: ev,
         routes: uniqueRoutes(ev),

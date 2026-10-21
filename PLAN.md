@@ -15,12 +15,12 @@ The first vertical slice (brief section 16) is complete, URL security (section 1
 | 4C Rendered auditing | Done, except safe form interaction tests. |
 | 4D Visual genericness | Done for the listed deterministic checks. Design brief input is not supported yet. |
 | 4E Content analysis | Partly. Placeholders, duplicate paragraphs, stock phrases, claims flagged for verification. Missing: repeated headings and repeated CTA text across pages. |
-| 4F Standard checks | **Not done.** Accessibility checks are hand-written; axe-core and Lighthouse are not integrated. No contrast, performance, or asset-weight checks. |
+| 4F Standard checks | Done with axe-core for accessibility (run inside the guarded browser). Performance, SEO, and best practices are samey's own measured checks rather than Lighthouse: Lighthouse drives its own Chrome outside the network guard, which would reopen the SSRF hole, and the guard distorts load timings, so timings are not reported. |
 | 4G Outputs | Done, plus a ready-to-paste fix prompt (`fix-prompt.md`, `samey prompt`). |
 | 5 Architecture | Single package with engine modules separate from CLI and report. Not a monorepo (the brief allows starting smaller). No Cheerio, PostCSS, or Zod yet. |
 | 6 Local models | Partly. Ollama adapter, loopback only, advisory, recorded in the report. Missing: the `LocalVisionAnalyzer` interface, caching by screenshot hash + model + prompt version, page text and structural facts as model input, Zod validation, and an actual evaluation of Qwen and Gemma vision models (no Ollama on the dev machine). |
 | 7 Finding model | Done: numeric confidence, fingerprint, verified flag, evidence types, safe source paths, secret redaction, dedup by fingerprint; scan id, versions, viewports, failed routes, limitations, duration. |
-| 8 Scoring | Done: `p = s·c·w`, saturating categories, the five brief weights, renormalization over measured categories, versioned config, no labels, deterministic, boundary and dedup tests. Not calibrated. |
+| 8 Scoring | Done (v3: the brief's 10% technical share is split into performance 5%, SEO 3%, best practices 2%): `p = s·c·w`, saturating categories, the five brief weights, renormalization over measured categories, versioned config, no labels, deterministic, boundary and dedup tests. Not calibrated. |
 | 9 Visual engine | Layers 1, 3, 4 done; layer 2 (screenshot model analysis) is basic. |
 | 10 Rules | Functional rules done except forms. Button clicks only report "no effect" after observing DOM, navigation, and errors. |
 | 11 Security | URL auditing done (see README "Network safety"). Repository: no implicit script execution, path traversal protection, `.env` files never read, secrets redacted. Model safety: page text is never sent to the model yet. |
@@ -29,7 +29,7 @@ The first vertical slice (brief section 16) is complete, URL security (section 1
 
 ## Next
 
-1. **axe-core and Lighthouse.** Replace the hand-written accessibility rules with axe-core results (keeping touch targets and overflow, which axe does not cover), and add Lighthouse for performance and asset weight under technical quality.
+1. **Calibrate on real sites.** Run on a few dozen real sites, collect false positives from users, tune thresholds and weights.
 2. **Fixtures and benchmark.** Add the missing fixtures from section 12 (handcrafted but generic, intentional repetition, consistent multi-page design system, broken responsive, delayed rendering and dynamic routes, prompt injection as a standalone site), then a small human-labeled benchmark to start calibrating weights.
 3. **Model pipeline.** `LocalVisionAnalyzer` interface, Zod-validated output, cache keyed by screenshot hash + model + prompt version, structural facts as input with page text marked as untrusted, then evaluate a Qwen VL and a Gemma vision model on the fixtures.
 4. **Content gaps.** Repeated headings and CTA text across pages; safe form checks (labels, a submit control, no real submission).
@@ -49,6 +49,9 @@ Explicit non-goals for now: hosted dashboard, accounts, browser or editor extens
 - **Never run project code implicitly.** Dev servers only with `--serve`; `serve` in the config file needs `--serve` on the command line too.
 - **Five categories, as in the brief.** Former categories map as: genericness and consistency to visual; copy and credibility to content; functionality and horizontal overflow to functional; accessibility, touch targets, tiny text to accessibility; page metadata to technical.
 - **Confidence numbers.** About 0.9 for measurements, 0.6 for structural heuristics, 0.35 for judgment calls, 0.3 for model output.
+- **axe-core over Lighthouse.** axe runs in the same guarded page, so accessibility depth matches Lighthouse without giving up the network sandbox.
+- **No load timings.** All traffic is proxied through Node; LCP and FCP would be wrong. samey reports bytes, counts, CLS, and long-task blocking, which the proxy does not distort.
+- **Parallel crawl.** Three pages at a time by default, results re-sorted into discovery order so reports are stable.
 - **Fingerprints exclude routes**, so the same element in a shared layout is one finding and one penalty, with the other routes listed in `alsoOn`.
 - **A single modest stock gradient is `info`**, which carries no penalty: the brief says not to penalize gradients in isolation.
 - **Error pages are not content.** A 404 is reported as a broken link and failed route; its markup is not fed to visual rules.
