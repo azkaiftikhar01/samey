@@ -1,0 +1,41 @@
+name: Wrong or missing finding
+description: samey flagged something that is fine, or missed something it should catch
+labels: [false-positive]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks. This is the most useful feedback while the rules are being tuned.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What happened?
+      options:
+        - It flagged something that is fine (false positive)
+        - It missed something it should catch (false negative)
+        - The severity or score feels wrong
+    validations:
+      required: true
+  - type: input
+    id: rule
+    attributes:
+      label: Rule id
+      description: Shown on the finding in the report, for example stock-gradient or axe/color-contrast
+      placeholder: stock-gradient
+  - type: input
+    id: url
+    attributes:
+      label: Public URL, if you can share one
+      placeholder: https://example.com/pricing
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: What samey said, and why it is wrong. A screenshot of the finding helps.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: samey version
+      description: Output of `npx samey-cli --version`
+      placeholder: 0.2.0

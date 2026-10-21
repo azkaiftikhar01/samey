@@ -1,5 +1,7 @@
 # samey
 
+[![npm](https://img.shields.io/npm/v/samey-cli)](https://www.npmjs.com/package/samey-cli) [![CI](https://github.com/azkaiftikhar01/samey/actions/workflows/ci.yml/badge.svg)](https://github.com/azkaiftikhar01/samey/actions/workflows/ci.yml) [![license](https://img.shields.io/github/license/azkaiftikhar01/samey)](LICENSE)
+
 **Is your AI-built site samey?** samey audits a website built with Claude Code, Cursor, Codex or any other coding agent, shows you what makes it look like every other one, and writes a prompt your agent can use to fix it.
 
 ```bash
@@ -10,7 +12,7 @@ Or install it once with `npm i -g samey-cli` and run `samey audit .`.
 
 ![samey auditing a generic landing page, writing a fix prompt, and re-auditing the fixed site](docs/samey-demo.gif)
 
-> **Early release.** The rules work and are tested, but the scoring weights have not been calibrated against human judgment yet. If samey flags something that looks fine to you, or misses something obvious, please [open an issue](https://github.com/azkaiftikhar01/samey/issues) with the URL or a screenshot. That feedback is exactly what will make it accurate.
+> **Early release.** The rules work and are tested, but the scoring weights have not been calibrated against human judgment yet. If samey flags something that looks fine to you, or misses something obvious, please [report it](https://github.com/azkaiftikhar01/samey/issues/new?template=false-positive.yml) with the URL or a screenshot. That feedback is exactly what will make it accurate.
 
 ## What it catches
 

@@ -1,0 +1,24 @@
+name: Bug
+description: samey crashed, hung, or produced a broken report
+labels: [bug]
+body:
+  - type: input
+    id: command
+    attributes:
+      label: Command you ran
+      placeholder: npx samey-cli audit . --url http://localhost:3000 --dev
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: What happened
+      description: Paste the terminal output. Remove anything private.
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: samey version, Node version, OS
+      placeholder: 0.2.0, Node 22, macOS 15
